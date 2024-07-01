@@ -1,0 +1,177 @@
+@import "../../../mixins.scss";
+
+.heroBanner {
+    width: 100%;
+    height: 450px;
+    background-color: var(--black);
+    display: flex;
+    align-items: center;
+    position: relative;
+    @include md {
+        height: 700px;
+    }
+    .backdrop-img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0.8;
+        overflow: hidden;
+        .lazy-load-image-background {
+            width: 100%;
+            height: 100%;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+            }
+        }
+    }
+    .opacity-layer {
+        width: 100%;
+        height: 250px;
+        background: linear-gradient(
+            180deg,
+            rgba(4, 21, 45, 0) 0%,
+            #04152d 79.17%
+        );
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+    .heroBannerContent {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        text-align: left;
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        // .title {
+        //     font-size: 50px;
+        //     font-weight: 700;
+        //     margin-bottom: 10px;
+        //     @include md {
+        //         margin-bottom: 0;
+        //         font-size: 90px;
+        //     }
+        // }
+        // .subTitle {
+        //     font-size: 18px;
+        //     font-weight: 500;
+        //     margin-bottom: 40px;
+        //     @include md {
+        //         font-size: 24px;
+        //     }
+        // }
+        // .searchInput {
+        //     display: flex;
+        //     align-items: center;
+        //     width: 100%;
+        //     input {
+        //         width: calc(100% - 100px);
+        //         height: 50px;
+        //         background-color: white;
+        //         outline: 0;
+        //         border: 0;
+        //         border-radius: 30px 0 0 30px;
+        //         padding: 0 15px;
+        //         font-size: 14px;
+        //         @include md {
+        //             width: calc(100% - 150px);
+        //             height: 60px;
+        //             font-size: 20px;
+        //             padding: 0 30px;
+        //         }
+        //     }
+        //     button {
+        //         width: 100px;
+        //         height: 50px;
+        //         background: var(--gradient);
+        //         color: white;
+        //         outline: 0;
+        //         border: 0;
+        //         border-radius: 0 30px 30px 0;
+        //         font-size: 16px;
+        //         cursor: pointer;
+        //         @include md {
+        //             width: 150px;
+        //             height: 60px;
+        //             font-size: 18px;
+        //         }
+        //     }
+        // }
+    }
+}
+$netflix-red: #e50914; // Darker red for buttons
+$netflix-gray: #ddd; // Lighter gray for text
+$netflix-font-family: 'Helvetica Neue', sans-serif; // Consistent font
+
+.heroBannerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; // Align content to the left
+    justify-content: left; // Center content vertically
+    padding: 20px;
+    text-align: left;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7); // Transparent dark background
+    width: 100%; // Occupy full width
+  .Title{
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .description {
+    margin-bottom: 20px;
+    color: $netflix-gray;
+    font-family: $netflix-font-family;
+    font-size: 1.2rem;
+    font-weight: bold;
+    // Consider adding font size or weight for prominence
+  }
+
+  .buttonGroup {
+    display: flex;
+    justify-content: center; // Center buttons horizontally for Netflix style
+    align-items: center;
+    margin: 10px 0; // Adjust vertical margin as needed
+
+    .likeButton{
+      display: flex;
+      align-items: center;
+      padding: 10px; // Adjust padding for button size preference
+      border: none;
+      border-radius: 5px;
+      color: white;
+      position: absolute;
+      left: 30px;
+      font-family: $netflix-font-family;
+      font-size: 1.2rem;
+      cursor: pointer;
+    } .enquireButton{
+        display: flex;
+        align-items: center;
+        padding: 10px; // Adjust padding for button size preference
+        border: none;
+        border-radius: 5px;
+        color: white;
+        position: absolute;
+        left: 90px;
+        font-family: $netflix-font-family;
+        font-size: 1.2rem;
+        cursor: pointer;
+  
+
+      svg {
+        margin-right: 5px;
+        fill: white; // Ensure icon is white on red background
+      }
+    }
+  }
+}

@@ -1,29 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./Feedback.scss";
 import avatar from "../../../assets/avatar.png"; // Placeholder avatar image
 
 const Feedback = () => {
   const [feedbackText, setFeedbackText] = useState("");
-  const [rating, setRating] = useState(0); // State for rating, default 0
-  const [feedbackList, setFeedbackList] = useState([
-    { id: 1, user: "John Doe", time: "1 hour ago", text: "This is a great component! Well done!", rating: 5 },
-    { id: 2, user: "Jane Smith", time: "2 hours ago", text: "I really like the design. Simple and effective.", rating: 4 },
-    // Add more dummy feedback items as needed
-  ]);
+  const [rating, setRating] = useState(0);
+  const [feedbackList, setFeedbackList] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Logic to handle form submission (simulated adding new feedback)
-    const newFeedback = {
-      id: Date.now(),
-      user: "Anonymous", // You can change this to the logged-in user's name if available
-      time: "Just now",
-      text: feedbackText,
-      rating: rating,
+  const projectId = "66aa8b86ec331872d8b599dc"; // Retrieve projectId from URL parameters
+  const userId = "134c971e-6785-49e3-9371-3ee3acc714d3"; // Retrieve userId from local storage
+
+  useEffect(() => {
+    // Fetch comments when the component mounts
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/comments/project/${projectId}`);
+        console.log("fetched comments are:", response.data);
+        
+        setFeedbackList(response.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
     };
-    setFeedbackList([newFeedback, ...feedbackList]);
-    setFeedbackText("");
-    setRating(0); // Reset rating after submission
+
+    fetchComments();
+  }, [projectId]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // New feedback object
+    const newFeedback = {
+      userId,
+      projectId,
+      comment: feedbackText,
+      rating, // Including rating if it's required
+    };
+
+    try {
+      // Send POST request to the backend
+      const response = await axios.post(`http://localhost:5000/api/comments`, newFeedback);
+
+      // Add the new feedback to the feedback list
+      console.log("Comment added successfully:", response.data);
+
+      setFeedbackList([response.data, ...feedbackList]);
+      setFeedbackText("");
+      setRating(0); // Reset rating after submission
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      // Optionally, handle the error (e.g., display a message to the user)
+    }
   };
 
   const handleRatingChange = (value) => {
@@ -61,20 +89,16 @@ const Feedback = () => {
       </form>
       <div className="feedback-list">
         <h3 className="feedback-list-title">Recent Feedback</h3>
-        {feedbackList.map((feedback) => (
-          <div className="feedback-item" key={feedback.id}>
+        {feedbackList.map((feedback, index) => (
+          <div className="feedback-item" key={feedback.id || index}>
             <div className="feedback-info">
-              <img
-                src={avatar}
-                alt="Profile"
-                className="feedback-avatar"
-              />
+              <img src={avatar} alt="Profile" className="feedback-avatar" />
               <div>
-                <div className="feedback-user">{feedback.user}</div>
-                <div className="feedback-time">{feedback.time}</div>
+                <div className="feedback-user">{`${index + 1}. ${feedback.user}`}</div>
+                <div className="feedback-time">{feedback.updatedAt}</div>
               </div>
             </div>
-            <div className="feedback-text">{feedback.text}</div>
+            <div className="feedback-text">{feedback.comment}</div>
             <div className="feedback-rating">Rating: {feedback.rating} ★</div>
           </div>
         ))}

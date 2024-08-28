@@ -3,22 +3,33 @@
   background-color: var(--black);
   // padding-top: 100px;
 }
-.title{
+.title {
   color: white;
-  margin-top: 10px;
+  margin-top: 0px; /* Optional: Adjust as needed */
 }
+
+.title h1 {
+  font-size: 28px; /* Reduced font size */
+  margin: 0; /* Remove default margin */
+}
+
+
 
 .content {
   display: flex;
   position: relative;
   flex-direction: column;
   gap: 25px;
+ 
+  overflow: hidden;
 
   .left {
     flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
 
     .posterImg {
-      width: 600px;
+      width: 800px;
       display: block;
       border-radius: 12px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -26,27 +37,79 @@
   }
 
   .right {
-    color: white;
-    font-family: 'Arial', sans-serif;
-
-    .title {
-      font-size: 28px;
-      line-height: 40px;
-      margin-bottom: 10px;
-    }
-
-    .overview {
-      .heading {
-        font-size: 24px;
-        margin-bottom: 10px;
-      }
-
-      .description {
-        line-height: 24px;
-      }
-    }
+    width: 380px; /* Fixed width */
+    height: 100%; /* Full height of the viewport */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    background-color: #1c1c1c; /* Dark background for a DeviantArt-like appearance */
+    padding: 20px; /* Add padding for spacing */
+    box-sizing: border-box;
+    position: fixed; /* Fixed position relative to the viewport */
+    top: 0; /* Align to the top of the viewport */
+    right: 0; /* Align to the right of the viewport */
+    color: #e0e0e0; /* Light text color for contrast against dark background */
   }
-}
+  
+  .project-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line if needed */
+  }
+  
+  .row-layout {
+    flex-direction: row; /* Arrange items in a row */
+  }
+  
+  .column-layout {
+    flex-direction: column; /* Arrange items in a column */
+  }
+  
+  .project-item {
+    position: relative;
+    margin: 10px; /* Space between items */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure content stays within boundaries */
+    width: calc(50% - 20px); /* Adjust width for row layout */
+    /* For column layout, you can adjust the width as needed */
+  }
+  
+  .project-image {
+    width: 100%; /* Full width of the container */
+    height: 150px; /* Adjust height as needed */
+    object-fit: cover; /* Cover the area while maintaining aspect ratio */
+    border-radius: 8px 8px 0 0; /* Rounded top corners */
+  }
+  
+  .project-content {
+    position: absolute; /* Position content over the image */
+    top: 0; /* Align content to the top */
+    left: 0; /* Align content to the left */
+    right: 0; /* Align content to the right */
+    bottom: 0; /* Align content to the bottom */
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for better visibility */
+    color: #f5f5f5; /* Lighter text color for visibility */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    opacity: 0; /* Hide content by default */
+    transition: opacity 0.3s ease; /* Smooth transition effect */
+    padding: 10px; /* Add padding for content */
+    text-align: center; /* Center text within content */
+  }
+  
+  .project-item:hover .project-content {
+    opacity: 1; /* Show content on hover */
+  }
+  
+  
+  .project-content h4 {
+    margin: 0 0 10px;
+    font-size: 18px;
+  }
+  
+  .project-content p {
+    margin: 0;
+  }
+}   
 
 .buttons {
   display: flex;
@@ -190,39 +253,67 @@
 }
 
 // swiperStyles.scss
-.swiper-container {
-  width: 400px;
-  height: 400px;
-  overflow: hidden;
+.mySwiper {
+  width: 800px; // Adjust width as needed
+  height: 450px; // Decrease height as needed for main Swiper container
+  overflow: auto;
+  right: 30px;
 
-  .swiper-slide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000;
-    width: 100%; // Ensure each slide has a fixed width
-    height: 100%; // Ensure each slide has a fixed height
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+      width: 100%; // Ensure each slide has a fixed width
+      height: 100%; // Ensure each slide has a fixed height
+      
 
-    img {
-      max-width: 100%;
-      max-height: 100%;
+    
+
+    .TitleImg {
+      // top: 100px;
+      left: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      object-position: center;
+      position: relative;
+      
     }
   }
 
   .swiper-button-next,
   .swiper-button-prev {
-    color: #fff;
+    color: #e91414;
   }
 
   .swiper-pagination-bullet {
-    background: #fff;
+    background: #cd4141;
   }
 
   .swiper-pagination-bullet-active {
     background: #bf461d;
   }
 }
+
+.mySwiper-thumbs {
+  height: 18%;
+  box-sizing: border-box;
+  left:0px;
+
+}
+
+.mySwiper-thumbs .swiper-slide {
+  width: 25%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.mySwiper-thumbs .swiper-slide- {
+  opacity: 1;
+}
+
+
 
 
 .menu {
@@ -246,7 +337,7 @@
 }
 
 .icon {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .iconBox:hover .icon {
@@ -257,7 +348,7 @@
 .enhanced-breadcrumbs {
   display: flex;
   align-items: center;
-  padding: 10px 0;
+  padding: 5px 0;
   font-family: 'Arial', sans-serif;
   font-size: 14px;
   color: #62646a;
@@ -360,7 +451,7 @@
 }
 
 .icon {
-  font-size: 18px;
+  font-size: 15px;
   color: #555454;
   cursor: pointer;
 }

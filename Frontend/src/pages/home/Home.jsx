@@ -60,12 +60,12 @@ const [profilePic, setProfilePic] = useState(null);
         <div className="homePage">
            <Header/>
             <HeroBanner />
-            {/* <Curated/>
+            <Curated/>
             <Topics/>
             <Trending />
             <Popular />
             <TopRated />
-            <Recommended/> */}
+            <Recommended/>
         </div>
     );
 };

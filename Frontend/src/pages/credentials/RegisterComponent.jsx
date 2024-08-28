@@ -7,6 +7,7 @@ import "/src/AboutCard/ModelStyle.css";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/userSlice";
 import glogo from "/src/assets/Google__G__logo.svg.png";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function RegisterComponent({ showModal, handleClose }) {
   let navigate = useNavigate();
@@ -21,11 +22,6 @@ export default function RegisterComponent({ showModal, handleClose }) {
         return;
       }
 
-      // if (!credentials.email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-      //   toast.error("Please enter a valid email address");
-      //   return;
-      // }
-
       if (credentials.password !== confirmPassword) {
         toast.error("Passwords do not match");
         return;
@@ -36,12 +32,12 @@ export default function RegisterComponent({ showModal, handleClose }) {
 
       // Send user data to the backend
       const response = await axios.post(
-        "http://localhost:5000/api/users/register",
+        `${import.meta.env.VITE_PUBLIC_API}/users/register`,
         credentials
       );
       console.log("Response from backend:", response.data);
 
-      // Navigate to the home page
+      // Navigate to the login page
       navigate("/login");
       handleClose(); // Close the modal after registration
     } catch (err) {
@@ -49,23 +45,25 @@ export default function RegisterComponent({ showModal, handleClose }) {
       toast.error("Cannot Create your Account");
     }
   };
-
-  const handleGoogleRegister = async () => {
+  const handleGoogleRegister = async (credentialResponse) => {
     try {
-      const googleUser = await window.gapi.auth2.getAuthInstance().signIn();
-      const googleToken = googleUser.getAuthResponse().id_token;
+      // Extract the Google token from the response
+      const googleToken = credentialResponse.credential;
 
+      console.log("Google Token:", googleToken);
+      // Send the Google token to your backend
       const response = await axios.post(
-        "https://thezealplane-6dsp3b2ixq-uc.a.run.app/registerGoogleUser",
+        `${import.meta.env.VITE_PUBLIC_API}/users/google-login`,
         { token: googleToken }
       );
-      console.log("Response from Google API:", response.data);
 
-      // Navigate to the home page or profile page
-      navigate("/profile");
-      handleClose(); // Close the modal after registration
+      // Save user data to Redux or handle as needed
+      dispatch(setUser(response.data.user));
+
+      // Redirect to the home page
+      navigate("/home");
     } catch (err) {
-      console.log(err);
+      console.error("Error handling Google Sign-In:", err);
       toast.error("Google Sign-in failed");
     }
   };
@@ -86,7 +84,6 @@ export default function RegisterComponent({ showModal, handleClose }) {
             className="common-input"
             placeholder="Your Unique Name"
           />
- 
           <input
             onChange={(event) =>
               setCredentials((prevCredentials) => ({
@@ -128,10 +125,20 @@ export default function RegisterComponent({ showModal, handleClose }) {
           </p>
         </div>
         <div>
-          <button onClick={handleGoogleRegister} className="google-btn">
-            <img src={glogo} alt="Google logo" className="google-logo" />
-            Continue with Google
-          </button>
+          <GoogleLogin
+            clientId="120764277175-k72vhgov1mabn0sr3073oh4ck9v43mgk.apps.googleusercontent.com"
+            onSuccess={handleGoogleRegister}
+            onError={() => toast.error("Google Sign-in failed")}
+            render={(renderProps) => (
+              <button
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                className="google-btn"
+              >
+                <img src={glogo} alt="Google logo" className="google-logo" />
+              </button>
+            )}
+          />
         </div>
       </div>
     </div>

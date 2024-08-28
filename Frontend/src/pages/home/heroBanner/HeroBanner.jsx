@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import avtar from "/src/assets/avatar.png";
 import "./style.scss";
 import axios from "axios";
-import useFetch from "../../../hooks/useFetch";
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/autoplay";
+import "swiper/css/pagination";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import Img from "../../../components/lazyLoadImage/Img";
-import ContentWrapper from "../../../components/contentWrapper/ContentWrapper";
+import useFetch from "../../../hooks/useFetch";
 import {
   MdFavorite,
   MdQuestionAnswer,
@@ -15,7 +19,30 @@ import {
   MdUpdate,
   MdShuffle,
   MdStar,
+  MdShare,
+  MdThumbUp,
 } from "react-icons/md";
+import HeroBannerData from "./HeroBannerData";
+
+// TruncatedDescription Component
+const TruncatedDescription = ({ description, maxLength = 100 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div className="description">
+      {isExpanded ? description : `${description.substring(0, maxLength)}..`}
+      {description.length > maxLength && (
+        <span className="readMore" onClick={toggleReadMore}>
+          {isExpanded ? " Read Less" : " Read More"}
+        </span>
+      )}
+    </div>
+  );
+};
 
 const HeroBanner = ({ selectedPosterUrl }) => {
   const [background, setBackground] = useState("");
@@ -24,32 +51,12 @@ const HeroBanner = ({ selectedPosterUrl }) => {
   const { url } = useSelector((state) => state.home);
   const { data, loading } = useFetch("/movie/upcoming");
   const [datas, setDatas] = useState([]);
-  const [description, setDescription] = useState("");
-  const [title, setTitle] = useState("");
-  const [like, setLike] = useState(null);
-  const [enquiry, setEnquiry] = useState(null);
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const res = await axios.get("http://localhost:4000/projects");
-        console.log(res.data);
         setDatas(res.data);
-
-        // Set the initial background and description
-        setBackground(res.data[0]?.projectImageLink);
-
-        let index = 0;
-        const interval = setInterval(() => {
-          index = (index + 1) % res.data.length;
-          setTitle(res.data[index]?.projectTitle);
-          setBackground(res.data[index]?.projectImageLink);
-          setDescription(res.data[index]?.projectDescription);
-          setLike(res.data[index]?.approved);
-          setEnquiry(res.data[index]?.enquired);
-        }, 5000); // Change image every 5 seconds
-
-        return () => clearInterval(interval);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -101,26 +108,65 @@ const HeroBanner = ({ selectedPosterUrl }) => {
         </div>
 
         <div className="overlayImageBox">
-          <img
-            src="https://m.media-amazon.com/images/M/MV5BZmI2MzU3NmMtNGVmMS00YzczLWIzMGQtNDU0MjcyNTYzODEyXkEyXkFqcGdeQWxiaWFtb250._V1_.jpg"
-            alt="Overlay"
-          />
-          <div className="sidebar">
-            <div className="Title">Money Heist</div>
-            <div className="description">
-              A criminal mastermind who goes by "The Professor" has a plan to
-              pull off the biggest heist in recorded history – to print billions
-              of euros in the Royal Mint of Spain.
-            </div>
-            <div className="buttonGroup">
-              <button className="likeButton">
-                <MdFavorite /> Like
-              </button>
-              <button className="enquireButton">
-                <MdQuestionAnswer /> Enquire
-              </button>
-            </div>
-          </div>
+          <Swiper
+            style={{
+              "--swiper-navigation-color": "#fff",
+              "--swiper-navigation-size": "25px",
+              "--swiper-pagination-color": "#fff",
+              "--swiper-pagination-size": "2px",
+              width: "1050px",
+              height: "550px ",
+              padding: "0px",
+            }}
+            autoplay={{
+              delay: 5500,
+              disableOnInteraction: false,
+            }}
+            lazy={true}
+            pagination={{
+              clickable: true,
+            }}
+            navigation={true}
+            modules={[Autoplay, Pagination, Navigation]} // Ensure Autoplay is included here
+          >
+            {HeroBannerData.map((item, index) => (
+              <SwiperSlide key={index}>
+                <div className="slideContent">
+                  <div className="imageWrapper">
+                    <img src={item.projectImageLink} alt={item.projectTitle} />
+                  </div>
+
+                  <div className="hoverContent">
+                    {/* Title and Description */}
+                    <div className="titleDescriptionContainer">
+                      <div className="title">{item.projectTitle}</div>
+                      <TruncatedDescription
+                        className="description"
+                        description={item.projectDescription}
+                        maxLength={100}
+                      />
+                    </div>
+
+                    {/* Avatar */}
+                    <div className="avatarContainer">
+                      <div className="profileIcon">
+                        <img src={item.profileIconLink} alt="Profile" />
+                        <span>{item.profileName}</span>
+                      </div>
+                    </div>
+
+                    {/* Like and Share Icons  */}
+                    <div className="iconsContainer">
+                      <div className="icons">
+                        <MdThumbUp className="icon" />
+                        <MdShare className="icon" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
     </>

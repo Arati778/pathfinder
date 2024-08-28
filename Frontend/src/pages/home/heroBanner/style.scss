@@ -11,9 +11,139 @@ $netflix-font-family: 'Helvetica Neue', sans-serif; // Consistent font
   display: flex;
   align-items: center;
   position: relative;
+
   @include md {
     height: 700px;
   }
+
+  .slideContent {
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    overflow: hidden; 
+    transition: filter 0.3s ease-in-out;
+
+    &:hover {
+      .imageWrapper {
+        filter: brightness(0.6); /* Apply brightness only to image */
+      }
+
+      .hoverContent {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .imageWrapper {
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: filter 0.3s ease-in-out;
+      }
+    }
+
+    .hoverContent {
+      position: absolute;
+      // bottom: 190px;
+      // left: 20px;
+
+      top: 0;
+      left: -40%;
+      width: 100%; /* 40% of the slider width */
+     
+      // background: linear-gradient(to right, rgba(0, 0, 0, 9), rgba(255, 255, 255, 0));
+      display: flex;
+      flex-direction: column;
+      // justify-content: center;
+      text-align: start;
+      align-items: start;
+      padding: 20px;
+      // transform: translateX(-100%);
+      // transition: transform 0.3s ease; /* Slide-in effect */
+
+      color: white;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+
+      .title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+
+      .description {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #fff;
+        align-items: start;
+        max-width: 60%;
+      }
+    }
+.overlayImageBox:hover .hoverContent{
+  opacity: 1;
+}
+    .avatarContainer{
+      margin-top: 390px;
+    }
+    .profileIcon {
+      position: absolute;
+      // bottom: 20px;
+      // left: 20px;
+      display: flex;
+ 
+      align-items: center;
+
+      img {
+        border-radius: 30%;
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+      }
+
+      span {
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+      } 
+    }
+  }
+  .slideContent:hover .hoverContent {
+    transform: translateX(40%); /* Slide the hover content to its final position */
+  }
+
+  .swiper-wrapper{
+    margin-top: 0px;
+  }
+
+  .iconsContainer {
+    position: absolute;
+    margin-top: 480px;
+    right: -100px; /* Start off-screen to the right */
+   /* Smooth transition for sliding in */
+  
+    .icons {
+      display: flex;
+      gap: 10px;
+  
+      .icon {
+        color: #fff;
+        font-size: 24px;
+      }
+    }
+  }
+  
+  /* On hover, move the iconsContainer to the right corner */
+  .slideContent:hover .iconsContainer {
+    right: 20px; /* Position in the right corner */
+  }
+  
+ 
 
   .backdrop-img {
     width: 100%;
@@ -23,6 +153,7 @@ $netflix-font-family: 'Helvetica Neue', sans-serif; // Consistent font
     left: 0;
     opacity: 0.8;
     overflow: hidden;
+    
 
     .lazy-load-image-background {
       width: 100%;
@@ -191,8 +322,8 @@ $netflix-font-family: 'Helvetica Neue', sans-serif; // Consistent font
   position: absolute;
   top: 55%;
   left: 50%;
-  width: 1040px; // Adjusted width
-  height: 520px; // Adjusted height
+  width: 1050px; // Adjusted width
+  height: 550px; // Adjusted height
   background-color: rgba(0, 0, 0, 0.7);
   border-radius: 10px;
   overflow: hidden;
@@ -209,56 +340,47 @@ $netflix-font-family: 'Helvetica Neue', sans-serif; // Consistent font
     height: 100%;
     object-fit: cover;
   }
+    }
 
-  .sidebar {
-    position: absolute;
-    top: 0;
-    left: -250px; // Start hidden
-    width: 250px;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    transition: left 0.3s ease;
+  
+// swiper css
+
+/* Swiper CSS customization */
+.swiper {
+ 
+  height: 100%;
+
+  .swiper-slide {
     display: flex;
-    flex-direction: column;
-    // align-items: center;
     justify-content: center;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+  }
 
-    .Title {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: $netflix-gray;
-    }
+  .swiper-slide img {
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+  }
 
-    .description {
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
+  .swiper-pagination-bullet {
+    background: #fff;
+    opacity: 1;
+  }
 
-    .buttonGroup {
-      display: flex;
-      gap: 10px;
+  .swiper-pagination-bullet-active {
+    background: #ff0000;
+  }
 
-      .likeButton,
-      .enquireButton {
-        background-color: $netflix-red;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: #fff;
+  }
 
-        &:hover {
-          background-color: darken($netflix-red, 10%);
-        }
-      }
-    }
+  .swiper-button-prev:hover,
+  .swiper-button-next:hover {
+    color: #ff0000;
   }
 }
-  
-

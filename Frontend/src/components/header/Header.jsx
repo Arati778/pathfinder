@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaBell, FaSearch } from "react-icons/fa"; // Import the notification bell icon
+import { FaBell, FaSearch, FaUsers } from "react-icons/fa"; // Import the notification bell icon
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import "./style.scss";
@@ -33,7 +33,7 @@ const Header = () => {
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(
-          `https://thezealplane-6dsp3b2ixq-uc.a.run.app/getUserDetails/${userId}`
+          `http://localhost:5000/api/users/${userId}`
         );
         setUserName(response.data.username);
         setProfilePic(response.data.profilePic);
@@ -93,12 +93,15 @@ const Header = () => {
     // Dispatch logout action here
   };
 
+  const handleForumClick = () => {
+    navigate("/forum");
+  };
+
   return (
     <header
       className={`header ${show}`}
       style={{
         position: "fixed",
-        zIndex: "1",
         background: "rgba(0, 0, 0, 0.4)",
         width: "100%",
       }}
@@ -120,18 +123,28 @@ const Header = () => {
           />
         </form>
         <ul className="menuItems">
-          <li className="menuItem" style={{ color: "white" }}
-          onClick={handleNotificationClick}>
+          <li className="menuItem" style={{ fontSize: "18px" }}>
+            {/* <FaUsers /> */}
+            <span onClick={handleForumClick}>Communities</span>
+          </li>
+
+          {/* <button class="publish-btn">Publish</button> */}
+
+          <li
+            className="menuItem"
+            style={{ color: "white" }}
+            onClick={handleNotificationClick}
+          >
             <FaBell />
           </li>
           <li className="menuItem">
-            {userName && <span className="username">{userName}</span>}
             <img
               src={profilePic || avatar}
               alt=""
               className="avatarImage"
               onClick={handleProfileClick}
             />
+            {userName && <span className="username">{userName}</span>}
           </li>
 
           {user && (
@@ -141,7 +154,7 @@ const Header = () => {
           )}
         </ul>
       </ContentWrapper>
-      {showSearch && (
+      {/* {showSearch && (
         <div className="searchBar">
           <ContentWrapper>
             <div className="searchInput">
@@ -155,7 +168,7 @@ const Header = () => {
             </div>
           </ContentWrapper>
         </div>
-      )}
+      )} */}
     </header>
   );
 };

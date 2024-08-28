@@ -13,21 +13,25 @@ import {
   Select,
   InputLabel,
   Chip,
-  Box
+  Box,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Img from "../../../../components/lazyLoadImage/Img";
 import "./ProjectComponent.scss";
 import DummyCards from "./Others/Others";
 import { useSelector } from "react-redux";
 import ContentWrapper from "../../../../components/contentWrapper/ContentWrapper";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const ProjectComponent = () => {
   const [open, setOpen] = useState(false);
-  const userIdRedux = useSelector((state) => state.user.userId); // Get userId from Redux store
-  const userIdLocalStorage = localStorage.getItem("Id"); // Get userId from local storage
-  const userIds = userIdRedux || userIdLocalStorage;
+  const userIdRedux = useSelector((state) => state.user.userId);
+  const userIdLocalStorage = localStorage.getItem("Id");
+  const userId = userIdRedux || userIdLocalStorage;
+  const generateUniqueId = () => {
+    return Date.now() + Math.floor(Math.random() * 1000);
+  };
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -35,13 +39,18 @@ const ProjectComponent = () => {
     thumbnailLink: [],
     tags: [],
     username: localStorage.getItem("username"),
-    id: 19
+    id: generateUniqueId(), // Initialize with a unique numeric ID
   });
-  const userId = localStorage.getItem("userId");
-  const username = 'Prince';
+  // const userId = localStorage.getItem("userId");
+  const username = localStorage.getItem("username");
   const [submittedData, setSubmittedData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const { id } = useParams();
+
+  // Determine if the current user is viewing their own profile
+  const isOwner = id === userId;
 
   const navigate = useNavigate();
 
@@ -61,13 +70,17 @@ const ProjectComponent = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
   const handleTagChange = (event) => {
     const {
       target: { value },
     } = event;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      tags: typeof value === 'string' ? value.split(',') : value,
+      tags: typeof value === "string" ? value.split(",") : value,
     }));
   };
 
@@ -77,28 +90,43 @@ const ProjectComponent = () => {
       tags: prevFormData.tags.filter((tag) => tag !== tagToDelete),
     }));
   };
-  
 
   const handleSubmit = async () => {
     try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("description", formData.description);
+      data.append("tags", formData.tags.join(","));
+      data.append("username", formData.username);
+      data.append("id", formData.id);
+
+      if (selectedFile) {
+        data.append("thumbnailImage", selectedFile);
+      }
+
       const response = await axios.post(
         "http://localhost:5000/api/projects",
-        formData
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
       console.log("Form data successfully posted:", response.data);
       setSubmittedData([...submittedData, response.data]);
       handleClose();
       setFormData({
         name: "",
         description: "",
-        id: 19,
+        id: generateUniqueId(),
         thumbnailImage: [],
         tags: [],
-        username: "Prince"
+        username: localStorage.getItem("username"),
       });
       console.log("ProjectId", userId);
-      
-      // Redirect to the details page of the newly added project
+
       navigate(`/details/${response.data.projectId}`);
     } catch (error) {
       console.error("Error posting form data:", error);
@@ -145,7 +173,6 @@ const ProjectComponent = () => {
     { value: "Arts&Literature", label: "Arts&Literature" },
   ];
 
-  // Log the submittedData to the console
   useEffect(() => {
     if (submittedData) {
       console.log(submittedData);
@@ -154,7 +181,6 @@ const ProjectComponent = () => {
 
   return (
     <div>
-      <h1>This is Project</h1>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add Project</DialogTitle>
         <DialogContent>
@@ -184,16 +210,7 @@ const ProjectComponent = () => {
             value={formData.description}
             onChange={handleChange}
           />
-          <TextField
-            margin="dense"
-            id="photoLink"
-            name="thumbnailImage"
-            label="Please post your Image url here"
-            type="text"
-            fullWidth
-            value={formData.thumbnailImage}
-            onChange={handleChange}
-          />
+          <input type="file" onChange={handleFileChange} accept="image/*" />
           <FormControl fullWidth>
             <InputLabel id="tags-label">Tags</InputLabel>
             <Select
@@ -204,7 +221,7 @@ const ProjectComponent = () => {
               value={formData.tags}
               onChange={handleTagChange}
               renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
                     <Chip
                       key={value}
@@ -253,21 +270,22 @@ const ProjectComponent = () => {
               style={{
                 width: window.innerWidth <= 768 ? "130px" : "200px",
                 height: window.innerWidth <= 768 ? "170px" : "230px",
-                margin: "10px",
+                margin: "5px",
                 flex: "0 0 auto",
                 cursor: "pointer",
                 display: "inline-flex",
                 flexDirection: "column",
-                borderRadius: "5px",
+                borderRadius: "3px",
                 backgroundImage: project.thumbnailImage
                   ? `url(${project.thumbnailImage})`
-                  : 'none',
+                  : "none",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 position: "relative",
                 overflow: "hidden",
+                transition: "filter 0.3s ease-in-out",
               }}
-              onClick={() => navigate(`/details/${project.projectId}`)} // Redirect on click
+              onClick={() => navigate(`/details/${project.projectId}`)}
             >
               <div
                 style={{
@@ -281,7 +299,7 @@ const ProjectComponent = () => {
                 }}
               >
                 <Typography
-                  variant="h5"
+                  variant="p"
                   component="div"
                   style={{ marginBottom: "5px" }}
                 >
@@ -294,9 +312,11 @@ const ProjectComponent = () => {
           <p>No projects found.</p>
         )}
       </div>
-      <Button variant="contained" onClick={handleOpen}>
-        Add Project
-      </Button>
+      {isOwner && (
+        <Button variant="contained" onClick={handleOpen}>
+          Add Project
+        </Button>
+      )}
     </div>
   );
 };

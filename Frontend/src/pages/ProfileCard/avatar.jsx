@@ -9,7 +9,7 @@ import TabComponent from "./TabComponent/Tabs";
 import { useSelector } from "react-redux";
 import ContentWrapper from "../../components/contentWrapper/ContentWrapper";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { setUserId } from "../../store/userAction"; // Import the action to set userId
 import { useDispatch } from "react-redux"; // Import useDispatch hook
 import Header from "../../components/header/Header";
@@ -32,6 +32,11 @@ const AvatarComponent = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [responseMessage, setResponseMessage] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const { id } = useParams();
+
+  useEffect(() => {
+    console.log("User ID:", id);
+  }, [id]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -48,25 +53,41 @@ const AvatarComponent = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${userId}`);
+        if (userId === id) {
+          console.log(
+            "User ID from Redux/Local Storage matches ID from URL:",
+            id
+          );
+        } else {
+          console.log(
+            "User ID from Redux/Local Storage does not match ID from URL:",
+            id
+          );
+        }
+        const response = await axios.get(
+          `http://localhost:5000/api/users/${userId}`
+        );
         setUserDetails(response.data);
-        console.log(response.data.username);
-        setProfilePic(userDetails.profilePic);
+        setProfilePic(response.data.profilePic); // Correctly access profilePic from response.data
       } catch (error) {
         console.error("Error fetching user details:", error);
       }
     };
 
-    fetchUserDetails();
-  }, [userId]);
+    if (userId) {
+      fetchUserDetails();
+    }
+  }, [userId, id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserDetails({ ...userDetails, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = (info) => {
+    if (info.file.status === "done") {
+      setImageLink(info.file.response.url); // Assuming the server responds with the URL of the uploaded file
+    }
   };
 
   const handleFormSubmit = async (e) => {
@@ -74,36 +95,41 @@ const AvatarComponent = () => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append('username', userDetails.username);
-    formData.append('email', userDetails.email);
-    formData.append('fullName', userDetails.fullName);
-    formData.append('description', userDetails.description);
-    formData.append('dob', userDetails.dob);
-    formData.append('gender', userDetails.gender);
-    formData.append('location', userDetails.location);
-    formData.append('contactNumber', userDetails.contactNumber);
-    formData.append('address', userDetails.address);
-    formData.append('jobRole', userDetails.jobRole);
-    formData.append('level', userDetails.level);
-    formData.append('status', userDetails.status);
-
     if (file) {
-      formData.append('profilePic', file);
+      formData.append("profilePic", file);
     }
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/users/${userId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Retrieve the access token from wherever you store it (e.g., localStorage)
+      const token = localStorage.getItem("authToken");
+      // Make sure the token exists
+      if (!token) {
+        setLoading(false);
+        alert("Access token is missing. Please log in again.");
+        return;
+      }
+
+      // Submit the form data with the access token in the headers
+      const response = await axios.put(
+        `http://localhost:5000/api/users/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        }
+      );
+
       setUserDetails(response.data);
+      console.log("Profile data is:", response.data);
+      setProfilePic(response.data.profilePic);
       setLoading(false);
-      alert('User updated successfully');
+      alert("User updated successfully");
     } catch (error) {
       console.error("Error updating user:", error);
       setLoading(false);
-      alert('Failed to update user');
+      alert("Failed to update user");
     }
   };
 
@@ -118,9 +144,6 @@ const AvatarComponent = () => {
   //   navigate('/login');
   //   return null;
   // }
-
-
-
 
   useEffect(() => {
     const fetchGithubData = async () => {
@@ -137,7 +160,6 @@ const AvatarComponent = () => {
 
     fetchGithubData();
   }, []);
-
 
   const lastDigitsMatch = window.location.href.match(/\d{1,2}$/);
   const lastDigits = lastDigitsMatch
@@ -163,14 +185,14 @@ const AvatarComponent = () => {
             <div style={{ marginTop: "70px" }}>
               <div
                 className="card mb-3"
-                style={{ background: "rgba(55, 65, 122, 0.1)", color: "white" }}
+                style={{ background: "", color: "white" }}
               >
                 <div className="card-body" style={{ marginRight: "10px" }}>
                   <Row justify="center" align="middle">
                     <Col>
                       <Upload
-                        // showUploadList={false}
-                        // beforeUpload={beforeUpload}
+                      // showUploadList={false}
+                      // beforeUpload={beforeUpload}
                       >
                         {imageLink || profilePic ? (
                           <Avatar
@@ -197,9 +219,7 @@ const AvatarComponent = () => {
                           className="upload-overlay"
                           style={{ display: "none" }}
                         >
-                          { (
-                            <UploadOutlined onClick={openModal} />
-                          )}
+                          {<UploadOutlined onClick={openModal} />}
                         </div>
                       </Upload>
 
@@ -369,93 +389,83 @@ const AvatarComponent = () => {
                   }}
                 >
                   <div className="card-body" style={{ marginRight: "10px" }}>
-                  <Row justify="center" align="middle">
-                    <Col>
-                      <Upload
-                        // showUploadList={false}
-                        // beforeUpload={beforeUpload}
-                      >
-                        {imageLink || profilePic ? (
-                          <Avatar
-                            size={130}
-                            gap={2}
-                            src={imageLink || profilePic}
-                            style={{
-                              boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
-                              border: "2px solid rgba(255, 0, 0, 0.8)",
-                            }}
-                          />
-                        ) : (
-                          <Avatar
-                            size={150}
-                            gap={2}
-                            icon={<UserOutlined size={36} />}
-                            style={{
-                              boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
-                              border: "2px solid rgba(255, 0, 0, 0.8)",
-                            }}
-                          />
-                        )}
-                        <div
-                          className="upload-overlay"
-                          style={{ display: "none" }}
+                    <Row justify="center" align="middle">
+                      <Col>
+                        <Upload
+                          showUploadList={false}
+                          customRequest={({ file, onSuccess }) => {
+                            setFile(file);
+                            // Simulate a successful upload
+                            setTimeout(() => {
+                              onSuccess(null, file);
+                              handleFileChange({
+                                file: {
+                                  status: "done",
+                                  response: { url: URL.createObjectURL(file) },
+                                },
+                              });
+                            }, 1000);
+                          }}
+                          onChange={handleFileChange}
+                          onClick={openModal}
                         >
-                          { (
-                            <UploadOutlined onClick={openModal} />
+                          {profilePic ? (
+                            <Avatar
+                              size={130}
+                              gap={2}
+                              src={profilePic}
+                              style={{
+                                boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
+                                border: "2px solid rgba(255, 0, 0, 0.8)",
+                              }}
+                            />
+                          ) : (
+                            <Avatar
+                              size={150}
+                              gap={2}
+                              icon={<UserOutlined size={36} />}
+                              style={{
+                                boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
+                                border: "2px solid rgba(255, 0, 0, 0.8)",
+                              }}
+                            />
                           )}
-                        </div>
-                      </Upload>
+                          <div
+                            className="upload-overlay"
+                            style={{ display: "none" }}
+                          >
+                            <UploadOutlined onClick={openModal} />
+                          </div>
+                        </Upload>
 
-                      <div>
                         <Modal
                           title="User Details"
                           visible={modalVisible}
                           onCancel={closeModal}
-                          footer={null}
+                          footer={[
+                            <Button
+                              key="submit"
+                              type="primary"
+                              onClick={handleFormSubmit}
+                              loading={loading}
+                            >
+                              {loading ? <Spin /> : "Upload Image"}
+                            </Button>,
+                            <Button key="cancel" onClick={closeModal}>
+                              Ok
+                            </Button>,
+                          ]}
                         >
-                          {loading ? (
-                            <Spin />
-                          ) : (
-                            imageLink && (
-                              <img
-                                src={imageLink}
-                                alt="User Image"
-                                style={{ maxWidth: "100%" }}
-                              />
-                            )
+                          {profilePic && (
+                            <img
+                              src={profilePic}
+                              alt="User Image"
+                              style={{ maxWidth: "100%" }}
+                            />
                           )}
-                          <Button
-                            type="button"
-                            // onClick={handleProfileUpload}
-                            style={{
-                              background:
-                                "linear-gradient(45deg, #232146, #3b2055)",
-                              border: "none",
-                              color: "#fff",
-                              padding: "10px 15px",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              transition: "background 0.3s", // Add transition for smooth effect
-                            }}
-                            onMouseOver={(e) => {
-                              e.target.style.background =
-                                "linear-gradient(45deg, #3b2055, #232146)";
-                            }}
-                            onMouseOut={(e) => {
-                              e.target.style.background =
-                                "linear-gradient(45deg, #232146, #3b2055)";
-                            }}
-                          >
-                            Upload Image
-                          </Button>
-                          <Button type="button" onClick={closeModal}>
-                            Ok
-                          </Button>
                         </Modal>
-                      </div>
-                    </Col>
-                  </Row>
-                        
+                      </Col>
+                    </Row>
 
                     <div className="text-center text-sm-left mb-2 mb-sm-0">
                       {isEditMode ? (

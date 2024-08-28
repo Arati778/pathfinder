@@ -3,47 +3,71 @@ import axios from "axios";
 import { Button } from "antd";
 import { FaTimes, FaEdit } from "react-icons/fa";
 import Modal from "react-modal";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserId } from "../../store/userAction";
 import "./avatar.scss";
+import { useParams } from "react-router-dom";
+
 
 Modal.setAppElement("#root");
 
 const ProfileCard = () => {
+  const user = useSelector((state) => state.user.user);
+  const userIdRedux = useSelector((state) => state.user.userId);
+  const userIdLocalStorage = localStorage.getItem("Id");
+  const userId = userIdRedux || userIdLocalStorage;
+  const dispatch = useDispatch();
   const [data, setData] = useState({
     username: "Krishna",
     jobRole: "FullStack Developer",
     description: "This is demo description",
-    fullName: ""
+    fullName: "",
   });
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     jobRole: data.jobRole,
     description: data.description,
   });
+  const { id } = useParams();
+
+  // Determine if the current user is viewing their own profile
+  const isOwner = id === userId;
+  // console.log("userId", userId);
+  // console.log("id", id);
+  
 
   useEffect(() => {
     // Fetch user data from backend API
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users/1');
-        console.log("userdata is:", response.data);
+        // Use 'id' from URL if present; otherwise, use 'userId'
+        const userIdToFetch = id || userId;
+        const response = await axios.get(`http://localhost:5000/api/users/${userIdToFetch}`);
+        console.log("User data is:", response.data);
         const { fullName, description, jobRole } = response.data;
         setData((prevData) => ({
           ...prevData,
-          fullName: fullName || 'Full Name not provided',
-          description: description || 'Description not provided',
-          jobRole: jobRole || 'Job Role not provided',
+          fullName: fullName || "Full Name not provided",
+          description: description || "Description not provided",
+          jobRole: jobRole || "Job Role not provided",
         }));
         setFormData({
-          jobRole: jobRole || 'Job Role not provided',
-          description: description || 'Description not provided',
+          jobRole: jobRole || "Job Role not provided",
+          description: description || "Description not provided",
         });
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [id, userId]);
+
+  useEffect(() => {
+    if (!userIdRedux && userIdLocalStorage) {
+      dispatch(setUserId(userIdLocalStorage));
+    }
+  }, [dispatch, userIdRedux, userIdLocalStorage]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -55,7 +79,7 @@ const ProfileCard = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
+    setFormData({ 
       ...formData,
       [name]: value,
     });
@@ -63,11 +87,14 @@ const ProfileCard = () => {
 
   const handleSaveButtonClick = async () => {
     try {
-      const response = await axios.put('http://localhost:5000/api/users/1', {
-        jobRole: formData.jobRole,
-        description: formData.description,
-      });
-      console.log('User data updated:', response.data);
+      const response = await axios.put(
+        `${import.meta.env.VITE_PUBLIC_API}/users/${userId}`,
+        {
+          jobRole: formData.jobRole,
+          description: formData.description,
+        }
+      );
+      console.log("User data updated:", response.data);
       setData({
         ...data,
         jobRole: formData.jobRole,
@@ -75,7 +102,7 @@ const ProfileCard = () => {
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating user data:', error);
+      console.error("Error updating user data:", error);
     }
   };
 
@@ -125,9 +152,12 @@ const ProfileCard = () => {
             maxHeight: "250px",
           }}
         >
-          <Button className="Edit" onClick={handleEditClick}>
-            <FaEdit />
-          </Button>
+          {/* Conditionally render the Edit button */}
+          {isOwner && (
+            <Button className="Edit" onClick={handleEditClick}>
+              <FaEdit />
+            </Button>
+          )}
           <h5>
             <strong>Artist</strong> // <strong>Writer</strong> //{" "}
             <strong>FullStack Developer</strong> // {data.jobRole}
@@ -175,6 +205,16 @@ const ProfileCard = () => {
             name="description"
             value={formData.description}
             placeholder="About You"
+            onChange={handleInputChange}
+            style={{ marginBottom: "10px", width: "100%" }}
+          />
+          <br />
+          <h5>Your birth date?</h5>
+          <input
+            type="text"
+            name="dob"
+            value={formData.dob}
+            placeholder="About Your date of birth"
             onChange={handleInputChange}
             style={{ marginBottom: "10px", width: "100%" }}
           />

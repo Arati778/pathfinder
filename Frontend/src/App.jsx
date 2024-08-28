@@ -8,6 +8,7 @@ import { Axios } from "axios";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import Home from "./pages/home/Home";
+import ForumHome from "./pages/forum/Home";
 import Details from "./pages/details/Details";
 import SearchResult from "./pages/searchResult/SearchResult";
 import Explore from "./pages/explore/Explore";
@@ -22,6 +23,9 @@ import ProjectPage from "./pages/ProfileCard/TabComponent/ProjectComponent/Proje
 import axios from "axios";
 import DemoProjectPage from "./components/carousel/DemoProject";
 import Notification from "./components/Notification/Notification";
+import ForgotPassword from "./pages/credentials/ForgotPassword";
+import PostDetail from "./pages/forum/PostDetail";
+import CreatePost from "./pages/forum/CreatePost";
 
 function App() {
     const dispatch = useDispatch();
@@ -71,9 +75,8 @@ function App() {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`https://thezealplane-6dsp3b2ixq-uc.a.run.app/getUserDetails/${userId}`);
+        const response = await axios.get(`http://localhost:5000/api/users/${userId}`);
         localStorage.setItem('username', response.data.username);
-        console.log('Username saved to local storage:', response.data.id);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -91,8 +94,12 @@ function App() {
                 <Route path="/details/:projectId" element={<DetailsPage />}/>
                 <Route path="/home/:id" element={<DemoProjectPage />} />
                 <Route path="/register" element={<RegisterComponent />} />
+                <Route path="/forgot-password" element={<ForgotPassword/>} />
                 <Route path="/login" element={<LoginComponent/>} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/forum" element={<ForumHome/>} />
+                <Route path="/forum/post" element={<PostDetail />} />
+                <Route path="/forum/create-post" element={<CreatePost />} />
                 <Route path="/profile/:id" element={<AvatarComponent/>}/>
                 <Route path="/p" element={<MyComponent/>} />
                 <Route path="/:mediaType/:id" element={<Details />} />

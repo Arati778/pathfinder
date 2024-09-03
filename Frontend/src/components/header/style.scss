@@ -43,7 +43,8 @@
         list-style-type: none;
         display: flex;
         align-items: center;
-        // font-family: "Poppins", sans-serif;
+        margin: 0;
+        font-family: "Poppins", sans-serif !important;
         // font-family: "Open Sans", sans-serif;
         font-family: Arial, sans-serif; 
         .menuItem {
@@ -55,7 +56,7 @@
             align-items: center;
             margin: 0 15px;
             color: rgb(223, 223, 223);
-            font-weight: 600;
+            font-weight: 500;
             position: relative;
             cursor: pointer;
 
@@ -63,7 +64,8 @@
                 color: var(--pink);
             }
             .username {
-                color: whitesmoke;
+                color: rgb(223, 223, 223);
+               font-weight: 500;
                 @media (max-width: 768px) {
                     display: none;
                 }}
@@ -75,9 +77,9 @@
         height: 45px;
         object-fit: cover;
         border-radius: 50%;
-        margin-left: 15px;
+      
         cursor: pointer;
-        margin-top: 12px;
+        
     }
 
     .FaBell {

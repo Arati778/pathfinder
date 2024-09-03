@@ -107,7 +107,7 @@ const Header = () => {
       }}
     >
       <ContentWrapper>
-        <div className="logo" onClick={() => navigate("/")}>
+        <div className="logo" onClick={() => navigate("/home")}>
           <img src={logozp} alt="Logo" />
         </div>
         <form className="search-bar">
@@ -135,7 +135,7 @@ const Header = () => {
             style={{ color: "white" }}
             onClick={handleNotificationClick}
           >
-            <FaBell />
+        <i className="fas fa-bell"></i>
           </li>
           <li className="menuItem">
             <img

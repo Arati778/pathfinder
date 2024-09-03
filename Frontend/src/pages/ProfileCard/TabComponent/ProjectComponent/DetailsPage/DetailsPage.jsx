@@ -39,6 +39,8 @@ import { useSelector, useDispatch } from "react-redux";
 import avatar from "../../../../../assets/avatar.png";
 import Header from "../../../../../components/header/Header";
 import Feedback from "../../../../../components/carousel/Projexts/Feedback";
+import HeroBannerData from "../../../../home/heroBanner/HeroBannerData";
+import { MdShare, MdThumbUp } from "react-icons/md";
 
 const DetailsPage = () => {
   const { projectId } = useParams();
@@ -99,6 +101,10 @@ const DetailsPage = () => {
 
     fetchUserDetails();
   }, [userId]);
+
+
+  
+
 
   const handleCardClick = () => {
     console.log("Card clicked");
@@ -284,98 +290,48 @@ const DetailsPage = () => {
                   )}
                 </Swiper>
               </div>
+
               <div className="right">
                 <div className="project-container row-layout">
-                  <div className="project-item">
-                    <img
-                      src="https://thedrum-media.imgix.net/thedrum-prod/s3/news/tmp/666306/grid_0_3.png?w=608&ar=default&fit=crop&crop=faces&auto=format"
-                      alt="Project 1"
-                      className="project-image"
-                    />
-                    <div className="project-content">
-                      <h4>Project Title 1</h4>
-                      <p>
-                        Description of the project goes here. This could include
-                        details about the project, technologies used, etc.
-                      </p>
+                  {HeroBannerData.map((project, index) => (
+                    <div key={index} className="project-item">
+                      <img
+                        src={project.projectImageLink}
+                        alt={project.projectTitle}
+                        className="project-image"
+                      />
+                      <div className="project-content">
+                        <h4>{project.projectTitle}</h4>
+                        {/* <p>{project.projectDescription}</p> */}
+                        <div className="avatarContainer2">
+                          <div className="profileIcon2">
+                            <img src={project.profileIconLink} alt="Profile" />
+                            <span>{project.profileName}</span>
+                          </div>
+                        </div>
+
+                        <div className="iconsContainer2">
+                          <div className="icons2">
+                            <MdShare className="icon" />
+                            <MdThumbUp className="icon" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="project-item">
-                    <img
-                      src="https://miro.medium.com/v2/resize:fit:1088/1*qpiqp74gFtmTA8nCGY8FMg.jpeg"
-                      alt="Project 2"
-                      className="project-image"
-                    />
-                    <div className="project-content">
-                      <h4>Project Title 2</h4>
-                      <p>
-                        Description of the project goes here. This could include
-                        details about the project, technologies used, etc.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="project-item">
-                    <img
-                      src="https://weirdwonderfulai.art/wp-content/uploads/2023/01/comic-illustrations-1080x675.jpg"
-                      alt="Project 3"
-                      className="project-image"
-                    />
-                    <div className="project-content">
-                      <h4>Project Title 3</h4>
-                      <p>
-                        Description of the project goes here. This could include
-                        details about the project, technologies used, etc.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="project-item">
-                    <img
-                      src="https://i0.wp.com/scifi.radio/wp-content/uploads/2022/12/superfrog.jpg?fit=1024%2C575&ssl=1"
-                      alt="Project 4"
-                      className="project-image"
-                    />
-                    <div className="project-content">
-                      <h4>Project Title 4</h4>
-                      <p>
-                        Description of the project goes here. This could include
-                        details about the project, technologies used, etc.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="project-item">
-                    <img
-                      src="https://img.freepik.com/premium-photo/detailed-comic-book-art-young-female-warrior-standing-alone-neoncity-street-ai-generated_665346-45905.jpg "
-                      alt="Project 3"
-                      className="project-image"
-                    />
-                    <div className="project-content">
-                      <h4>Project Title 3</h4>
-                      <p>
-                        Description of the project goes here. This could include
-                        details about the project, technologies used, etc.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="project-item">
-                    <img
-                      src="https://img.freepik.com/premium-photo/room-full-things-that-look-like-witch-dark_665346-44599.jpg"
-                      alt="Project 4"
-                      className="project-image"
-                    />
-                    <div className="project-content">
-                      <h4>Project Title 4</h4>
-                      <p>
-                        Description of the project goes here. This could include
-                        details about the project, technologies used, etc.
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className="description">{projectData.description}</div>
+            <div className="description1">{projectData.description}</div>
             <br />
-            <h4 style={{ color: "white", marginBottom: "30px" }}>
+
+            <h4
+              style={{
+                color: "white",
+                marginBottom: "30px",
+                marginTop: "50px",
+              }}
+            >
               Like My Project?
             </h4>
             <div className="User-Profile">

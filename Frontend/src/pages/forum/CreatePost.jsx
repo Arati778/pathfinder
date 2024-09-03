@@ -1,42 +1,93 @@
+// src/components/CreatePost.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./createPost.scss";
 
 const CreatePost = () => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    title: '',
+    body: '',
+    subreddit: '',
+    author: '',
+    image: '',
+  });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const newPost = { title, body, votes: 0, comments: [] };
-    await axios.post('http://localhost:5000/api/posts', newPost);
-    navigate('/');
+  const { title, body, subreddit, author, image } = formData;
+
+  const onChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:5000/api/posts', formData);
+      console.log('Post created:', res.data);
+      // Clear the form
+      setFormData({
+        title: '',
+        body: '',
+        subreddit: '',
+        author: '',
+        image: '',
+      });
+    } catch (err) {
+      console.error('Error creating post:', err.response?.data || err.message);
+    }
   };
 
   return (
-    <div className="create-post-container">
-      <h2>Create New Post</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
+    <div className="create-post">
+      <h2>Create a New Post</h2>
+      <form onSubmit={onSubmit}>
+        <div>
           <label>Title</label>
           <input
             type="text"
+            name="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={onChange}
             required
           />
         </div>
-        <div className="form-group">
+        <div>
           <label>Body</label>
           <textarea
+            name="body"
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={onChange}
             required
           />
         </div>
-        <button type="submit" className="submit-button">Submit</button>
+        <div>
+          <label>Subreddit</label>
+          <input
+            type="text"
+            name="subreddit"
+            value={subreddit}
+            onChange={onChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Author</label>
+          <input
+            type="text"
+            name="author"
+            value={author}
+            onChange={onChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Image URL</label>
+          <input
+            type="text"
+            name="image"
+            value={image}
+            onChange={onChange}
+          />
+        </div>
+        <button type="submit">Create Post</button>
       </form>
     </div>
   );

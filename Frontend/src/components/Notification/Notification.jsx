@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./NotificationPage.scss"; // Import SCSS file
+import Header from "../header/Header";
 
 const NotificationPage = () => {
   const [notifications, setNotifications] = useState([
@@ -28,25 +29,27 @@ const NotificationPage = () => {
   };
 
   return (
-    <div className="notification-page">
-      <h2 className="notification-title">Notifications</h2>
-      <div className="notification-list">
-        {notifications.map((notification) => (
-          <div
-            key={notification.id}
-            className={`notification-item ${notification.read ? "read" : "unread"}`}
-            onClick={() => markAsRead(notification.id)}
-          >
-            <div className="notification-info">
-              <div className="notification-title">{notification.title}</div>
-              <div className="notification-description">
-                {notification.description}
+    <div className="notification-top">
+      <Header />
+      <div className="notification-page">
+        <div className="notification-list">
+          {notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`notification-item ${notification.read ? "read" : "unread"}`}
+              onClick={() => markAsRead(notification.id)}
+            >
+              <div className="notification-info">
+                <div className="notification-title">{notification.title}</div>
+                <div className="notification-description">
+                  {notification.description}
+                </div>
+                <div className="notification-time">{notification.time}</div>
               </div>
-              <div className="notification-time">{notification.time}</div>
+              {!notification.read && <div className="unread-indicator"></div>}
             </div>
-            {!notification.read && <div className="unread-indicator"></div>}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

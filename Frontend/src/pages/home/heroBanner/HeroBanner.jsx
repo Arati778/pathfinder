@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/pagination";
+
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import Img from "../../../components/lazyLoadImage/Img";
 import useFetch from "../../../hooks/useFetch";
@@ -109,11 +110,11 @@ const HeroBanner = ({ selectedPosterUrl }) => {
 
         <div className="overlayImageBox">
           <Swiper
+          className="swiper-container"
             style={{
               "--swiper-navigation-color": "#fff",
-              "--swiper-navigation-size": "25px",
+              "--swiper-navigation-size": "20px",
               "--swiper-pagination-color": "#fff",
-              "--swiper-pagination-size": "2px",
               width: "1050px",
               height: "550px ",
               padding: "0px",
@@ -125,6 +126,7 @@ const HeroBanner = ({ selectedPosterUrl }) => {
             lazy={true}
             pagination={{
               clickable: true,
+            
             }}
             navigation={true}
             modules={[Autoplay, Pagination, Navigation]} // Ensure Autoplay is included here
@@ -147,19 +149,18 @@ const HeroBanner = ({ selectedPosterUrl }) => {
                       />
                     </div>
 
-                    {/* Avatar */}
-                    <div className="avatarContainer">
-                      <div className="profileIcon">
-                        <img src={item.profileIconLink} alt="Profile" />
-                        <span>{item.profileName}</span>
-                      </div>
-                    </div>
-
-                    {/* Like and Share Icons  */}
+                    {/* Like, Share Icons and Avatar */}
                     <div className="iconsContainer">
                       <div className="icons">
                         <MdThumbUp className="icon" />
                         <MdShare className="icon" />
+                      </div>
+                    </div>
+
+                    <div className="avatarContainer">
+                      <div className="profileIcon">
+                        <img src={item.profileIconLink} alt="Profile" />
+                        <span>{item.profileName}</span>
                       </div>
                     </div>
                   </div>

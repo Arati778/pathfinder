@@ -1,65 +1,77 @@
+.notification-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  min-height: 100vh;
+
+}
+
 .notification-page {
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
-    .notification-title {
-      font-size: 24px;
-      margin-bottom: 20px;
-      color: #333; /* Dark color */
-    }
-  
-    .notification-list {
-      .notification-item {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        margin-bottom: 15px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-  
-        &:hover {
-          background-color: #f0f0f0;
-        }
-  
-        &.unread {
-          background-color: #e7f3ff; /* Light blue for unread notifications */
-        }
-  
-        .notification-info {
-          .notification-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-          }
-  
-          .notification-description {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #666; /* Medium color */
-          }
-  
-          .notification-time {
-            font-size: 14px;
-            color: #999; /* Light color */
-          }
-        }
-  
-        .unread-indicator {
-          width: 8px;
-          height: 8px;
-          background-color: #007bff; /* Blue indicator for unread notifications */
-          border-radius: 50%;
-          margin-left: 10px;
-        }
-      }
-  
-      .read {
-        opacity: 0.6; /* Dim opacity for read notifications */
-      }
-    }
-  }
-  
+  margin-top: 60px; /* Add space below the navbar */
+  width: 100%;
+  max-width: 900px; /* Control the width of the notifications list */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-left-color 0.3s ease;
+}
+
+.notification-item.unread {
+  background-color: #e0f7fa;
+  border-left-color: #00796b;
+}
+
+.notification-item.read {
+  background-color: #f9f9f9;
+}
+
+.notification-item:hover {
+  background-color: #e0f2f1;
+}
+
+.notification-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.notification-description {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.notification-time {
+  font-size: 0.8em;
+  color: #999;
+}
+
+.unread-indicator {
+  width: 10px;
+  height: 10px;
+  background-color: #ff1744;
+  border-radius: 50%;
+}

@@ -15,9 +15,11 @@ const Feedback = () => {
     // Fetch comments when the component mounts
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/comments/project/${projectId}`);
+        const response = await axios.get(
+          `http://localhost:5000/api/comments/project/${projectId}`
+        );
         console.log("fetched comments are:", response.data);
-        
+
         setFeedbackList(response.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -40,7 +42,10 @@ const Feedback = () => {
 
     try {
       // Send POST request to the backend
-      const response = await axios.post(`http://localhost:5000/api/comments`, newFeedback);
+      const response = await axios.post(
+        `http://localhost:5000/api/comments`,
+        newFeedback
+      );
 
       // Add the new feedback to the feedback list
       console.log("Comment added successfully:", response.data);
@@ -94,7 +99,9 @@ const Feedback = () => {
             <div className="feedback-info">
               <img src={avatar} alt="Profile" className="feedback-avatar" />
               <div>
-                <div className="feedback-user">{`${index + 1}. ${feedback.user}`}</div>
+                <div className="feedback-user">{`${index + 1}. ${
+                  feedback.user
+                }`}</div>
                 <div className="feedback-time">{feedback.updatedAt}</div>
               </div>
             </div>

@@ -43,8 +43,13 @@
         }
       }
     }
+
+    .feedback-input, .feedback-item {
+      width: 100%; // Ensure full width within the parent container
+    }
   
     .feedback-list {
+      
       .feedback-list-title {
         font-size: 18px;
         margin-top: 80px;
@@ -54,7 +59,7 @@
   
       .feedback-item {
         margin-bottom: 15px;
-        padding: 5px;
+        padding: 10px;
         background-color:#161a1f; /* Darker item background */
         border: 1px solid #555; /* Darker border */
         border-radius: 4px;

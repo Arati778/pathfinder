@@ -48,7 +48,7 @@
         gap: 25px;
         @include md {
             gap: 50px;
-            flex-direction: row;
+            // flex-direction: row;
         }
         .left {
             flex-shrink: 0;

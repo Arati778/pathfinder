@@ -1,58 +1,61 @@
-import React, { useState } from "react";
-import "./NotificationPage.scss"; // Import SCSS file
-import Header from "../header/Header";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const NotificationPage = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "New Message",
-      description: "You have received a new message from John Doe.",
-      time: "1 hour ago",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "Reminder",
-      description: "Don't forget to submit your weekly report by tomorrow.",
-      time: "2 hours ago",
-      read: true,
-    },
-    // Add more notifications as needed
-  ]);
+const NotificationBell = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const markAsRead = (id) => {
-    const updatedNotifications = notifications.map((notification) =>
-      notification.id === id ? { ...notification, read: true } : notification
-    );
-    setNotifications(updatedNotifications);
+  const fetchNotifications = async () => {
+    try {
+      // Fetch public notifications
+      const res = await axios.get(`${apiBaseUrl}/notification`);
+      console.log("Notifications are:", res.data);
+      
+      if (res.data.length === 0) {
+        console.log("No notifications found.");
+      }
+      setNotifications(res.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setError("Failed to load notifications."); // Set error message
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    fetchNotifications();
+
+    // Polling every 10 seconds
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="notification-top">
-      <Header />
-      <div className="notification-page">
-        <div className="notification-list">
+    <div className="notification-bell">
+      {loading ? (
+        <p>Loading notifications...</p>
+      ) : error ? (
+        <p>{error}</p> // Display error message
+      ) : notifications.length === 0 ? (
+        <p>No notifications to show</p>
+      ) : (
+        <ul>
           {notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`notification-item ${notification.read ? "read" : "unread"}`}
-              onClick={() => markAsRead(notification.id)}
-            >
-              <div className="notification-info">
-                <div className="notification-title">{notification.title}</div>
-                <div className="notification-description">
-                  {notification.description}
-                </div>
-                <div className="notification-time">{notification.time}</div>
-              </div>
-              {!notification.read && <div className="unread-indicator"></div>}
-            </div>
+            <li key={notification._id}>
+              <span>{notification.message}</span>
+              {/* Remove mark as read button for public notifications */}
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      )}
     </div>
   );
 };
 
-export default NotificationPage;
+export default NotificationBell;

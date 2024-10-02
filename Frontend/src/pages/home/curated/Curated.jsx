@@ -20,7 +20,7 @@ const Curated = () => {
         <div className="carouselSection">
             <ContentWrapper>
                 <span className="carouselTitle">Read Free Books here</span>
-                <SwitchTabs data={["Day", "Week"]} onTabChange={onTabChange} />
+                <SwitchTabs data={["Comics", "Manga"]} onTabChange={onTabChange} />
             </ContentWrapper>
             <DemoCarausel />
         </div>

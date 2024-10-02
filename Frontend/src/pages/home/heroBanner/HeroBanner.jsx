@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import avtar from "/src/assets/avatar.png";
-import "./style.scss";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/autoplay";
-import "swiper/css/pagination";
-
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import Img from "../../../components/lazyLoadImage/Img";
 import useFetch from "../../../hooks/useFetch";
+import { MdThumbUp, MdShare } from "react-icons/md";
+import { Modal } from "antd";
 import {
-  MdFavorite,
-  MdQuestionAnswer,
-  MdHome,
-  MdTrendingUp,
-  MdUpdate,
-  MdShuffle,
-  MdStar,
-  MdShare,
-  MdThumbUp,
-} from "react-icons/md";
-import HeroBannerData from "./HeroBannerData";
+  FacebookShareButton,
+  TwitterShareButton,
+  LinkedinShareButton,
+  WhatsappShareButton,
+  RedditShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  LinkedinIcon,
+  WhatsappIcon,
+  RedditIcon,
+} from "react-share";
+import "./style.scss";
+import "swiper/css";
+import "swiper/css/autoplay";
+import "swiper/css/pagination";
 
 // TruncatedDescription Component
 const TruncatedDescription = ({ description, maxLength = 100 }) => {
@@ -46,121 +46,103 @@ const TruncatedDescription = ({ description, maxLength = 100 }) => {
 };
 
 const HeroBanner = ({ selectedPosterUrl }) => {
-  const [background, setBackground] = useState("");
-  const [query, setQuery] = useState("");
+  const [datas, setDatas] = useState([]);
+  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
   const navigate = useNavigate();
   const { url } = useSelector((state) => state.home);
-  const { data, loading } = useFetch("/movie/upcoming");
-  const [datas, setDatas] = useState([]);
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchProjects = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/projects");
-        setDatas(res.data);
+        const res = await axios.get(`${apiBaseUrl}/projects`);
+        const validProjects = res.data.filter(
+          (project) =>
+            project.thumbnailImage && project.thumbnailImages.length > 0
+        );
+        setDatas(validProjects);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching projects:", error);
       }
     };
-
-    fetchProject();
+    fetchProjects();
   }, []);
 
-  const searchQueryHandler = (event) => {
-    if (event.key === "Enter" && query.length > 0) {
-      navigate(`/search/${query}`);
-    }
+  const handleShareClick = (project) => {
+    setSelectedProject(project);
+    setIsShareModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsShareModalVisible(false);
+  };
+
+  // Handle Like Button Click
+  const handleLikeClick = (projectId) => {
+    setDatas((prevData) =>
+      prevData.map((project) =>
+        project.projectId === projectId
+          ? {
+              ...project,
+              likes: project.isLiked ? project.likes - 1 : project.likes + 1,
+              isLiked: !project.isLiked, // Toggle like state
+            }
+          : project
+      )
+    );
   };
 
   return (
     <>
       <div className="heroBanner">
-        {!loading && (
-          <div className="backdrop-img">
-            <Img src="https://m.media-amazon.com/images/M/MV5BZmI2MzU3NmMtNGVmMS00YzczLWIzMGQtNDU0MjcyNTYzODEyXkEyXkFqcGdeQWxiaWFtb250._V1_.jpg" />
-            <div className="bottom-opacity-layer"></div>{" "}
-            {/* Add opacity layer */}
-          </div>
-        )}
-
-        <div className="opacity-layer"></div>
-
-        <div className="iconSidebar">
-          <div className="iconWrapper">
-            <MdStar className="icon" />
-            <span>Recommended</span>
-          </div>
-          <div className="iconWrapper">
-            <MdHome className="icon" />
-            <span>Curated</span>
-          </div>
-          <div className="iconWrapper">
-            <MdTrendingUp className="icon" />
-            <span>Trending</span>
-          </div>
-          <div className="iconWrapper">
-            <MdUpdate className="icon" />
-            <span>Upcoming</span>
-          </div>
-          <div className="iconWrapper">
-            <MdShuffle className="icon" />
-            <span>Random</span>
-          </div>
-        </div>
-
         <div className="overlayImageBox">
           <Swiper
-          className="swiper-container"
+            className="swiper-container"
             style={{
               "--swiper-navigation-color": "#fff",
-              "--swiper-navigation-size": "20px",
               "--swiper-pagination-color": "#fff",
               width: "1050px",
-              height: "550px ",
-              padding: "0px",
+              height: "550px",
             }}
-            autoplay={{
-              delay: 5500,
-              disableOnInteraction: false,
-            }}
-            lazy={true}
-            pagination={{
-              clickable: true,
-            
-            }}
+            autoplay={{ delay: 5500, disableOnInteraction: false }}
+            pagination={{ clickable: true }}
             navigation={true}
-            modules={[Autoplay, Pagination, Navigation]} // Ensure Autoplay is included here
+            modules={[Autoplay, Pagination, Navigation]}
           >
-            {HeroBannerData.map((item, index) => (
-              <SwiperSlide key={index}>
+            {datas.map((project) => (
+              <SwiperSlide key={project.projectId}>
                 <div className="slideContent">
                   <div className="imageWrapper">
-                    <img src={item.projectImageLink} alt={item.projectTitle} />
+                    <img src={project.thumbnailImage} alt={project.name} />
                   </div>
 
                   <div className="hoverContent">
-                    {/* Title and Description */}
                     <div className="titleDescriptionContainer">
-                      <div className="title">{item.projectTitle}</div>
+                      <div className="title">{project.name}</div>
                       <TruncatedDescription
-                        className="description"
-                        description={item.projectDescription}
+                        description={project.description}
                         maxLength={100}
                       />
                     </div>
 
-                    {/* Like, Share Icons and Avatar */}
                     <div className="iconsContainer">
                       <div className="icons">
-                        <MdThumbUp className="icon" />
-                        <MdShare className="icon" />
-                      </div>
-                    </div>
-
-                    <div className="avatarContainer">
-                      <div className="profileIcon">
-                        <img src={item.profileIconLink} alt="Profile" />
-                        <span>{item.profileName}</span>
+                        <MdThumbUp
+                          className="icon"
+                          style={{
+                            color: project.isLiked ? "blue" : "white",
+                          }}
+                          onClick={() => handleLikeClick(project.projectId)}
+                        />
+                        <span className="likeCount">
+                          {project.likes}{" "}
+                          {project.likes === 1 ? "Like" : "Likes"}
+                        </span>
+                        <MdShare
+                          className="icon"
+                          onClick={() => handleShareClick(project)}
+                        />
                       </div>
                     </div>
                   </div>
@@ -170,6 +152,45 @@ const HeroBanner = ({ selectedPosterUrl }) => {
           </Swiper>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {selectedProject && (
+        <Modal
+          title={<div className="modalTitle">Share {selectedProject.name}</div>}
+          visible={isShareModalVisible}
+          onCancel={handleCancel}
+          footer={null}
+          className="shareModal" // Add this class for styling
+        >
+          <div className="shareOptions">
+            <FacebookShareButton
+              url={`${window.location.origin}/project/${selectedProject.projectId}`}
+            >
+              <FacebookIcon size={32} round />
+            </FacebookShareButton>
+            <TwitterShareButton
+              url={`${window.location.origin}/project/${selectedProject.projectId}`}
+            >
+              <TwitterIcon size={32} round />
+            </TwitterShareButton>
+            <LinkedinShareButton
+              url={`${window.location.origin}/project/${selectedProject.projectId}`}
+            >
+              <LinkedinIcon size={32} round />
+            </LinkedinShareButton>
+            <WhatsappShareButton
+              url={`${window.location.origin}/project/${selectedProject.projectId}`}
+            >
+              <WhatsappIcon size={32} round />
+            </WhatsappShareButton>
+            <RedditShareButton
+              url={`${window.location.origin}/project/${selectedProject.projectId}`}
+            >
+              <RedditIcon size={32} round />
+            </RedditShareButton>
+          </div>
+        </Modal>
+      )}
     </>
   );
 };

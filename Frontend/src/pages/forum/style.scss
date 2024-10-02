@@ -1,6 +1,7 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #dae0e6;
+  background-color: #1a1a1b; /* Dark background similar to Reddit's dark mode */
+  color: #d7dadc; /* Lighter text color for all body text */
   margin: 0;
   padding: 0;
 }
@@ -9,9 +10,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #ffffff;
+  background-color: #272729; /* Darker background for the header */
   padding: 10px 20px;
-  // border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #343536; /* Slight border for separation */
 
   .header-logo img {
     width: 100px;
@@ -23,10 +24,10 @@ body {
 
     .nav-link {
       text-decoration: none;
-      color: #333;
+      color: #d7dadc; /* Light text color for links */
       font-weight: bold;
       &:hover {
-        color: #0079d3;
+        color: #0079d3; /* Blue on hover */
       }
     }
   }
@@ -34,13 +35,14 @@ body {
   .header-search {
     display: flex;
     align-items: center;
-    background-color: #f6f7f8;
+    background-color: #343536; /* Darker search bar background */
     padding: 5px 10px;
     border-radius: 4px;
 
     input {
       border: none;
       background: none;
+      color: #d7dadc; /* Light text inside the search bar */
       margin-left: 5px;
       font-size: 14px;
       outline: none;
@@ -54,10 +56,10 @@ body {
     gap: 15px;
 
     .icon-link {
-      color: #333;
+      color: #d7dadc; /* White/light icons */
       font-size: 27px;
       &:hover {
-        color: #0079d3;
+        color: #0079d3; /* Blue on hover for icons */
       }
     }
   }
@@ -67,7 +69,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #1a1a1b; /* Dark background for the main container */
 }
 
 .content-container {
@@ -81,7 +83,7 @@ body {
 .page-title {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
+  color: #d7dadc; /* Lighter title color */
   margin-bottom: 20px;
 }
 
@@ -90,8 +92,8 @@ body {
   max-width: 640px;
   margin: 0 auto;
   padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
+  background-color: #272729; /* Dark background for post container */
+  border: 1px solid #343536;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -100,9 +102,8 @@ body {
   margin-bottom: 20px;
 }
 
-
 .post {
-  background-color: white;
+  background-color: #1c1c1e; /* Dark background for posts */
   margin: 15px 0;
   padding: 15px;
   border-radius: 5px;
@@ -111,19 +112,20 @@ body {
 
 .post-header {
   font-size: 12px;
-  color: #787c7e;
+  color: #d7dadc; /* Lighter color for post metadata */
   margin-bottom: 10px;
 }
 
 .post-title {
   font-size: 18px;
   font-weight: bold;
+  color: #d7dadc;
   margin-bottom: 10px;
 }
 
 .post-body {
   font-size: 14px;
-  color: #333;
+  color: #d7dadc; /* Light text for the post content */
   margin-bottom: 15px;
 }
 
@@ -131,6 +133,7 @@ body {
   display: flex;
   align-items: center;
   font-size: 12px;
+  color: #d7dadc; /* Light footer text */
 }
 
 .post-footer button {
@@ -139,17 +142,17 @@ body {
   cursor: pointer;
   font-size: 14px;
   margin-right: 10px;
-  color: #ff4500;
+  color: #ff4500; /* Reddit orange for like buttons */
 }
 
 .post-footer button:hover {
-  color: #d13600;
+  color: #d13600; /* Darker orange on hover */
 }
 
 .comments-link {
   margin-left: 10px;
   text-decoration: none;
-  color: #787c7e;
+  color: #d7dadc; /* Light color for comment links */
 }
 
 .comments-link:hover {
@@ -158,7 +161,7 @@ body {
 
 .subreddit {
   font-weight: bold;
-  color: #0079d3;
+  color: #0079d3; /* Blue color for subreddit links */
 }
 
 .subreddit:hover {
@@ -167,17 +170,12 @@ body {
 
 .author {
   margin-left: 5px;
-  color: #333;
+  color: #d7dadc; /* Lighter text color for author */
 }
 
 .timestamp {
   margin-left: 5px;
-  color: #787c7e;
-}
-.post-footer {
-  display: flex;
-  align-items: center;
-  font-size: 12px;
+  color: #818384; /* Slightly darker color for timestamp */
 }
 
 .vote-button {
@@ -202,7 +200,7 @@ body {
 .comments-link {
   margin-left: 10px;
   text-decoration: none;
-  color: #787c7e;
+  color: #d7dadc;
   display: flex;
   align-items: center;
 }
@@ -214,4 +212,3 @@ body {
 .comments-link:hover {
   text-decoration: underline;
 }
-

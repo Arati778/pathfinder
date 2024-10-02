@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaBell, FaSearch, FaUsers } from "react-icons/fa"; // Import the notification bell icon
+import { FaBell, FaSearch } from "react-icons/fa"; // Import the notification bell icon
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import "./style.scss";
@@ -8,13 +8,14 @@ import logo from "../../assets/movix-logo.svg";
 import avatar from "../../assets/avatar.png";
 import { setUserId } from "../../store/userAction"; // Import the action to set userId
 import axios from "axios";
-import logozp from "/src/assets/logo-zp.jpg";
+import logozp from "/src/assets/logoZP.png";
 
 const Header = () => {
   const [show, setShow] = useState("top");
   const [lastScrollY, setLastScrollY] = useState(0);
   const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showProfileOptions, setShowProfileOptions] = useState(false); // State for showing profile pop-up
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((state) => state.user.user);
@@ -82,15 +83,22 @@ const Header = () => {
   };
 
   const handleProfileClick = () => {
+    setShowProfileOptions(!showProfileOptions); // Toggle profile options pop-up
+  };
+
+  const handleLogout = () => {
+    // Implement logout logic here
+    setShowProfileOptions(false); // Hide the profile options after logout
+    console.log("User logged out");
+  };
+
+  const handleVisitProfile = () => {
     navigate(`/profile/${userId}`);
+    setShowProfileOptions(false); // Hide the profile options pop-up
   };
 
   const handleNotificationClick = () => {
     navigate(`/home/Notification`);
-  };
-
-  const handleLogout = () => {
-    // Dispatch logout action here
   };
 
   const handleForumClick = () => {
@@ -124,18 +132,14 @@ const Header = () => {
         </form>
         <ul className="menuItems">
           <li className="menuItem" style={{ fontSize: "18px" }}>
-            {/* <FaUsers /> */}
             <span onClick={handleForumClick}>Communities</span>
           </li>
-
-          {/* <button class="publish-btn">Publish</button> */}
-
           <li
             className="menuItem"
             style={{ color: "white" }}
             onClick={handleNotificationClick}
           >
-        <i className="fas fa-bell"></i>
+            <FaBell />
           </li>
           <li className="menuItem">
             <img
@@ -145,16 +149,18 @@ const Header = () => {
               onClick={handleProfileClick}
             />
             {userName && <span className="username">{userName}</span>}
+            {showProfileOptions && (
+              <div className="profile-options">
+                <ul>
+                  <li onClick={handleVisitProfile}>Visit Profile</li>
+                  <li onClick={handleLogout}>Logout</li>
+                </ul>
+              </div>
+            )}
           </li>
-
-          {user && (
-            <li className="menuItem" onClick={handleLogout}>
-              Logout
-            </li>
-          )}
         </ul>
       </ContentWrapper>
-      {/* {showSearch && (
+      {showSearch && (
         <div className="searchBar">
           <ContentWrapper>
             <div className="searchInput">
@@ -164,11 +170,10 @@ const Header = () => {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyUp={searchQueryHandler}
               />
-              <VscChromeClose onClick={() => setShowSearch(false)} />
             </div>
           </ContentWrapper>
         </div>
-      )} */}
+      )}
     </header>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Col, Row, Upload, Avatar, Button, Modal, Spin, message } from "antd";
 import { UserOutlined, UploadOutlined } from "@ant-design/icons";
 import "./avatar.scss";
-// import RadarChartExample from "./radar";
+import RadarChartExample from "./radar";
 import MyBio from "./MyBio";
 import ProfileCard from "./ProfileCard";
 import TabComponent from "./TabComponent/Tabs";
@@ -13,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setUserId } from "../../store/userAction"; // Import the action to set userId
 import { useDispatch } from "react-redux"; // Import useDispatch hook
 import Header from "../../components/header/Header";
+import { FaTimes, FaEdit } from "react-icons/fa";
 
 const AvatarComponent = () => {
   const [activeTabKey, setActiveTabKey] = useState("postroom");
@@ -33,6 +34,7 @@ const AvatarComponent = () => {
   const [responseMessage, setResponseMessage] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const { id } = useParams();
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     console.log("User ID:", id);
@@ -65,7 +67,7 @@ const AvatarComponent = () => {
           );
         }
         const response = await axios.get(
-          `http://localhost:5000/api/users/${userId}`
+          `${apiBaseUrl}/users/${id || userId}`
         );
         setUserDetails(response.data);
         setProfilePic(response.data.profilePic); // Correctly access profilePic from response.data
@@ -101,7 +103,7 @@ const AvatarComponent = () => {
 
     try {
       // Retrieve the access token from wherever you store it (e.g., localStorage)
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("token");
       // Make sure the token exists
       if (!token) {
         setLoading(false);
@@ -111,7 +113,7 @@ const AvatarComponent = () => {
 
       // Submit the form data with the access token in the headers
       const response = await axios.put(
-        `http://localhost:5000/api/users/${userId}`,
+        `${apiBaseUrl}/users/${userId}`,
         formData,
         {
           headers: {
@@ -177,10 +179,12 @@ const AvatarComponent = () => {
   }, []);
 
   return (
-    <div className="col" style={{ backgroundColor: "#0c0d2c", width: "100%" }}>
+    <div className="col" style={{ backgroundColor: "#1e1f23", width: "100%", color: "#d3d4d8" }}>
       <Header />
+      
       <ContentWrapper>
         <div className="row">
+        <FaEdit />
           {isMobile ? (
             <div style={{ marginTop: "70px" }}>
               <div
@@ -346,7 +350,7 @@ const AvatarComponent = () => {
                   }}
                 >
                   <h6 className="card-title font-weight-bold">Rewards</h6>
-                  {/* <RadarChartExample /> */}
+                  <RadarChartExample />
                 </div>
               </div>
               <div
@@ -391,52 +395,52 @@ const AvatarComponent = () => {
                   <div className="card-body" style={{ marginRight: "10px" }}>
                     <Row justify="center" align="middle">
                       <Col>
-                        <Upload
-                          showUploadList={false}
-                          customRequest={({ file, onSuccess }) => {
-                            setFile(file);
-                            // Simulate a successful upload
-                            setTimeout(() => {
-                              onSuccess(null, file);
-                              handleFileChange({
-                                file: {
-                                  status: "done",
-                                  response: { url: URL.createObjectURL(file) },
-                                },
-                              });
-                            }, 1000);
-                          }}
-                          onChange={handleFileChange}
-                          onClick={openModal}
-                        >
-                          {profilePic ? (
-                            <Avatar
-                              size={130}
-                              gap={2}
-                              src={profilePic}
-                              style={{
-                                boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
-                                border: "2px solid rgba(255, 0, 0, 0.8)",
-                              }}
-                            />
-                          ) : (
-                            <Avatar
-                              size={150}
-                              gap={2}
-                              icon={<UserOutlined size={36} />}
-                              style={{
-                                boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
-                                border: "2px solid rgba(255, 0, 0, 0.8)",
-                              }}
-                            />
-                          )}
-                          <div
-                            className="upload-overlay"
-                            style={{ display: "none" }}
-                          >
-                            <UploadOutlined onClick={openModal} />
-                          </div>
-                        </Upload>
+                      <Upload
+  showUploadList={false}
+  customRequest={({ file, onSuccess }) => {
+    setFile(file);
+    
+    // Simulate a successful upload
+    setTimeout(() => {
+      onSuccess(null, file);
+      handleFileChange({
+        file: {
+          status: "done",
+          response: { url: URL.createObjectURL(file) }, // Make sure this is set correctly
+        },
+      });
+    }, 1000);
+  }}
+  onChange={(info) => {
+    if (info.file && info.file.status === "done" && info.file.response) {
+      handleFileChange(info);
+    }
+  }}
+  onClick={openModal}
+>
+  {profilePic ? (
+    <Avatar
+      size={130}
+      gap={2}
+      src={profilePic}
+      style={{
+        boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
+        border: "2px solid rgba(255, 0, 0, 0.8)",
+      }}
+    />
+  ) : (
+    <Avatar
+      size={150}
+      gap={2}
+      icon={<UserOutlined size={36} />}
+      style={{
+        boxShadow: "0 0 10px rgba(255, 0, 0, 0.8)",
+        border: "2px solid rgba(255, 0, 0, 0.8)",
+      }}
+    />
+  )}
+</Upload>
+
 
                         <Modal
                           title="User Details"
@@ -538,7 +542,7 @@ const AvatarComponent = () => {
                     }}
                   >
                     <h6 className="card-title font-weight-bold">Rewards</h6>
-                    {/* <RadarChartExample /> */}
+                    <RadarChartExample/>
                   </div>
                 </div>
 
@@ -556,7 +560,7 @@ const AvatarComponent = () => {
                       color: "white",
                     }}
                   >
-                    <MyBio />
+                    {/* <MyBio /> */}
                   </div>
                 </div>
               </div>

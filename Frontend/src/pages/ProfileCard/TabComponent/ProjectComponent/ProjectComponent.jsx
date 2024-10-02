@@ -25,13 +25,14 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 const ProjectComponent = () => {
-  const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
   const userIdRedux = useSelector((state) => state.user.userId);
   const userIdLocalStorage = localStorage.getItem("Id");
   const userId = userIdRedux || userIdLocalStorage;
   const generateUniqueId = () => {
     return Date.now() + Math.floor(Math.random() * 1000);
   };
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -39,17 +40,18 @@ const ProjectComponent = () => {
     thumbnailLink: [],
     tags: [],
     username: localStorage.getItem("username"),
-    id: generateUniqueId(), // Initialize with a unique numeric ID
+    id: generateUniqueId(),
   });
-  // const userId = localStorage.getItem("userId");
-  const username = localStorage.getItem("username");
+  
   const [submittedData, setSubmittedData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const { id } = useParams();
+  const [fetchedUsername, setFetchedUsername] = useState(""); // State to store fetched username
+  
+  const { id } = useParams(); // Get user ID from params
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  // Determine if the current user is viewing their own profile
   const isOwner = id === userId;
 
   const navigate = useNavigate();
@@ -75,9 +77,7 @@ const ProjectComponent = () => {
   };
 
   const handleTagChange = (event) => {
-    const {
-      target: { value },
-    } = event;
+    const { target: { value } } = event;
     setFormData((prevFormData) => ({
       ...prevFormData,
       tags: typeof value === "string" ? value.split(",") : value,
@@ -105,7 +105,7 @@ const ProjectComponent = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/projects",
+        `${apiBaseUrl}/projects`,
         data,
         {
           headers: {
@@ -114,7 +114,6 @@ const ProjectComponent = () => {
         }
       );
 
-      console.log("Form data successfully posted:", response.data);
       setSubmittedData([...submittedData, response.data]);
       handleClose();
       setFormData({
@@ -125,7 +124,6 @@ const ProjectComponent = () => {
         tags: [],
         username: localStorage.getItem("username"),
       });
-      console.log("ProjectId", userId);
 
       navigate(`/details/${response.data.projectId}`);
     } catch (error) {
@@ -133,38 +131,49 @@ const ProjectComponent = () => {
     }
   };
 
+  // Fetch user details based on the userId in URL params
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/users/${userId}`
-        );
-        localStorage.setItem("username", response.data.username);
-        console.log("Username saved to local storage:", response.data.username);
+        const response = await axios.get(`${apiBaseUrl}/users/${id}`); // Fetch using the ID from params
+        if (response.data.username) {
+          setFetchedUsername(response.data.username); // Set fetched username
+          localStorage.setItem("username", response.data.username);
+        } else {
+          setFetchedUsername(""); // No user found
+        }
       } catch (error) {
         console.error("Error fetching user details:", error);
+        setFetchedUsername(""); // No valid username if error occurs
       }
     };
 
     fetchUserDetails();
-  }, [userId]);
+  }, [id]);
 
+  // Fetch projects if username is available
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/projects/username/${username}`
-      );
-      setSubmittedData(response.data);
+      if (fetchedUsername) {
+        const response = await axios.get(`${apiBaseUrl}/projects/username/${fetchedUsername}`);
+        setSubmittedData(response.data);
+      } else {
+        setSubmittedData([]); // No projects if no valid username
+      }
     } catch (error) {
       setError(error);
     }
     setLoading(false);
   };
 
+  // Fetch projects after username is set
   useEffect(() => {
-    fetchData();
-  }, [username]);
+    if (fetchedUsername) {
+      fetchData();
+    }
+  }, [fetchedUsername]);
+
 
   const currencies = [
     { value: "Coding", label: "Coding" },
@@ -268,8 +277,8 @@ const ProjectComponent = () => {
               className="card"
               key={index}
               style={{
-                width: window.innerWidth <= 768 ? "130px" : "200px",
-                height: window.innerWidth <= 768 ? "170px" : "230px",
+                width: window.innerWidth <= 768 ? "130px" : "300px",
+                height: window.innerWidth <= 768 ? "170px" : "260px",
                 margin: "5px",
                 flex: "0 0 auto",
                 cursor: "pointer",

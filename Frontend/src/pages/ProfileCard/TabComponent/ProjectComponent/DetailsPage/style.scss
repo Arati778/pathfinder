@@ -18,7 +18,7 @@
 .content {
   display: flex;
   position: relative;
-  flex-direction: column;
+  // flex-direction: column;
   gap: 25px;
  
   overflow: hidden;
@@ -27,9 +27,10 @@
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
+    width: fit-content;
 
     .posterImg {
-      width: 800px;
+      width: 1200px;
       display: block;
       border-radius: 12px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -37,11 +38,11 @@
   }
 
   .right {
-    width: 380px; /* Fixed width */
+    width: 480px; /* Fixed width */
     height: 100%; /* Full height of the viewport */
     overflow-y: auto; /* Allow scrolling if content overflows */
     background-color: #1c1c1c; /* Dark background for a DeviantArt-like appearance */
-    padding: 20px; /* Add padding for spacing */
+    padding: 18px; /* Add padding for spacing */
     box-sizing: border-box;
     position: fixed; /* Fixed position relative to the viewport */
     top: 0; /* Align to the top of the viewport */
@@ -330,10 +331,10 @@
 
 // swiperStyles.scss
 .mySwiper {
-  width: 750px; // Adjust width as needed
-  height: 420px; // Decrease height as needed for main Swiper container
+  width: 850px; // Adjust width as needed
+  height: 520px; // Decrease height as needed for main Swiper container
   overflow: auto;
-
+  margin-left: 0;
 
     .swiper-slide {
       display: flex;
@@ -385,7 +386,8 @@
 
   box-sizing: border-box;
   margin-top: 10px; /* Adjust this as needed */
-  overflow: visible;
+  // overflow: visible;
+  margin-left: 50px;
 }
 
 
@@ -559,8 +561,8 @@
   object-fit: cover;
 }
 .description1 {
-  color: white;
-  margin-top: 50px;
+  color: rgb(219, 218, 218);
+
   font-size: 17px;
   width: 70%;
   letter-spacing: 0.6px;

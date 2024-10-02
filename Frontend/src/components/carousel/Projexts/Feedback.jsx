@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./Feedback.scss";
 import avatar from "../../../assets/avatar.png"; // Placeholder avatar image
+import { formatDistanceToNow } from "date-fns";
 
 const Feedback = () => {
   const [feedbackText, setFeedbackText] = useState("");
   const [rating, setRating] = useState(0);
   const [feedbackList, setFeedbackList] = useState([]);
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const projectId = "66aa8b86ec331872d8b599dc"; // Retrieve projectId from URL parameters
-  const userId = "134c971e-6785-49e3-9371-3ee3acc714d3"; // Retrieve userId from local storage
+  const { projectId } = useParams(); // Retrieve projectId from URL parameters
+  
+  const username = 'TestUser'; // Temporary hardcoded username, replace with actual user data
 
+  // Fetch comments when the component mounts
   useEffect(() => {
-    // Fetch comments when the component mounts
     const fetchComments = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/comments/project/${projectId}`
+          `${apiBaseUrl}/projects/id/${projectId}`
         );
-        console.log("fetched comments are:", response.data);
+        console.log("Fetched comments:", response.data); // Log the fetched comments
 
-        setFeedbackList(response.data);
+        // Assuming response.data has a structure like { project: { comments: [...] } }
+        setFeedbackList(response.data.comments); // Set the comments array from the project data
+        // console.log("comments are:", feedbackList);
+        
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
@@ -29,36 +36,33 @@ const Feedback = () => {
     fetchComments();
   }, [projectId]);
 
+  // Handle feedback submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // New feedback object
     const newFeedback = {
-      userId,
-      projectId,
-      comment: feedbackText,
+      username,
+      body: feedbackText,
       rating, // Including rating if it's required
     };
 
     try {
-      // Send POST request to the backend
       const response = await axios.post(
-        `http://localhost:5000/api/comments`,
+        `${apiBaseUrl}/projects/${projectId}`,
         newFeedback
       );
 
-      // Add the new feedback to the feedback list
       console.log("Comment added successfully:", response.data);
 
-      setFeedbackList([response.data, ...feedbackList]);
+      setFeedbackList([response.data, ...feedbackList]); // Prepend the new feedback to the list
       setFeedbackText("");
-      setRating(0); // Reset rating after submission
+      setRating(0); // Reset after submission
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      // Optionally, handle the error (e.g., display a message to the user)
     }
   };
 
+  // Handle rating change
   const handleRatingChange = (value) => {
     setRating(value);
   };
@@ -94,21 +98,29 @@ const Feedback = () => {
       </form>
       <div className="feedback-list">
         <h3 className="feedback-list-title">Recent Feedback</h3>
-        {feedbackList.map((feedback, index) => (
-          <div className="feedback-item" key={feedback.id || index}>
-            <div className="feedback-info">
-              <img src={avatar} alt="Profile" className="feedback-avatar" />
-              <div>
-                <div className="feedback-user">{`${index + 1}. ${
-                  feedback.user
-                }`}</div>
-                <div className="feedback-time">{feedback.updatedAt}</div>
+        {feedbackList.length === 0 ? (
+          <p>No feedback yet. Be the first to leave a comment!</p>
+        ) : (
+          feedbackList.map((feedback, index) => (
+            <div className="feedback-item" key={feedback._id || index}>
+              <div className="feedback-info">
+                <img src={avatar} alt="Profile" className="feedback-avatar" />
+                <div>
+                  <div className="feedback-user">{`${index + 1}. ${
+                    feedback.username || 'Anonymous'
+                  }`}</div>
+                  <div className="feedback-time">
+                  <div className="feedback-time">
+                {/* {formatDistanceToNow(new Date(feedback.timestamp))} ago */}
               </div>
+                  </div>
+                </div>
+              </div>
+              <div className="feedback-text">{feedback.body}</div>
+              <div className="feedback-rating">Rating: {feedback.rating} ★</div>
             </div>
-            <div className="feedback-text">{feedback.comment}</div>
-            <div className="feedback-rating">Rating: {feedback.rating} ★</div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

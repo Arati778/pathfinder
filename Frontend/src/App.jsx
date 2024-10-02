@@ -26,6 +26,7 @@ import Notification from "./components/Notification/Notification";
 import ForgotPassword from "./pages/credentials/ForgotPassword";
 import PostDetail from "./pages/forum/PostDetail";
 import CreatePost from "./pages/forum/CreatePost";
+import { io } from "socket.io-client";
 
 function App() {
     const dispatch = useDispatch();
@@ -34,43 +35,60 @@ function App() {
     const { url } = useSelector((state) => state.home);
     console.log(url);
 
+    // useEffect(() => {
+    //     fetchApiConfig();
+    //     genresCall();
+    // }, []);
+
+    // const fetchApiConfig = () => {
+    //     fetchDataFromApi("/configuration").then((res) => {
+    //         console.log(res);
+
+    //         const url = {
+    //             backdrop: res.images.secure_base_url + "original",
+    //             poster: res.images.secure_base_url + "original",
+    //             profile: res.images.secure_base_url + "original",
+    //         };
+
+    //         dispatch(getApiConfiguration(url));
+    //     });
+    // };
+
+    // const genresCall = async () => {
+    //     let promises = [];
+    //     let endPoints = ["tv", "movie"];
+    //     let allGenres = {};
+
+    //     endPoints.forEach((url) => {
+    //         promises.push(fetchDataFromApi(`/genre/${url}/list`));
+    //     });
+
+    //     const data = await Promise.all(promises);
+    //     console.log(data);
+    //     data.map(({ genres }) => {
+    //         return genres.map((item) => (allGenres[item.id] = item));
+    //     });
+
+    //     dispatch(getGenres(allGenres));
+    // };
+
     useEffect(() => {
-        fetchApiConfig();
-        genresCall();
+      // Initialize socket connection
+      const socket = io('http://localhost:5000'); // Replace with your server URL if different
+  
+      // Example of emitting a message to the server
+      socket.emit('dummyMessage', 'Hello from the client!');
+  
+      // Listening for server's response
+      socket.on('serverResponse', (message) => {
+        console.log('Received from server:', message);
+      });
+  
+      // Cleanup on component unmount
+      return () => {
+        socket.disconnect();
+      };
     }, []);
-
-    const fetchApiConfig = () => {
-        fetchDataFromApi("/configuration").then((res) => {
-            console.log(res);
-
-            const url = {
-                backdrop: res.images.secure_base_url + "original",
-                poster: res.images.secure_base_url + "original",
-                profile: res.images.secure_base_url + "original",
-            };
-
-            dispatch(getApiConfiguration(url));
-        });
-    };
-
-    const genresCall = async () => {
-        let promises = [];
-        let endPoints = ["tv", "movie"];
-        let allGenres = {};
-
-        endPoints.forEach((url) => {
-            promises.push(fetchDataFromApi(`/genre/${url}/list`));
-        });
-
-        const data = await Promise.all(promises);
-        console.log(data);
-        data.map(({ genres }) => {
-            return genres.map((item) => (allGenres[item.id] = item));
-        });
-
-        dispatch(getGenres(allGenres));
-    };
-
     
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -107,7 +125,7 @@ function App() {
                 <Route path="/explore/:mediaType" element={<Explore />} />
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
-            <Footer />
+            {/* <Footer /> */}
         </BrowserRouter>
     );
 }

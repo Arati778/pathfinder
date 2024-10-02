@@ -14,6 +14,7 @@ export default function RegisterComponent({ showModal, handleClose }) {
   const [credentials, setCredentials] = useState({});
   const [confirmPassword, setConfirmPassword] = useState("");
   const dispatch = useDispatch();
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const register = async () => {
     try {
@@ -32,7 +33,7 @@ export default function RegisterComponent({ showModal, handleClose }) {
 
       // Send user data to the backend
       const response = await axios.post(
-        `${import.meta.env.VITE_PUBLIC_API}/users/register`,
+        `${apiBaseUrl}/users/register`,
         credentials
       );
       console.log("Response from backend:", response.data);
@@ -125,20 +126,20 @@ export default function RegisterComponent({ showModal, handleClose }) {
           </p>
         </div>
         <div>
-          <GoogleLogin
-            clientId="120764277175-k72vhgov1mabn0sr3073oh4ck9v43mgk.apps.googleusercontent.com"
-            onSuccess={handleGoogleRegister}
-            onError={() => toast.error("Google Sign-in failed")}
-            render={(renderProps) => (
-              <button
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-                className="google-btn"
-              >
-                <img src={glogo} alt="Google logo" className="google-logo" />
-              </button>
-            )}
-          />
+              <GoogleLogin
+                clientId="120764277175-k72vhgov1mabn0sr3073oh4ck9v43mgk.apps.googleusercontent.com"
+                onSuccess={handleGoogleRegister}
+                onError={() => toast.error("Google Sign-in failed")}
+                render={(renderProps) => (
+                  <button
+                    onClick={renderProps.onClick}
+                    disabled={renderProps.disabled}
+                    className="google-btn"
+                  >
+                    <img src={glogo} alt="Google logo" className="google-logo" />
+                  </button>
+                )}
+              />
         </div>
       </div>
     </div>

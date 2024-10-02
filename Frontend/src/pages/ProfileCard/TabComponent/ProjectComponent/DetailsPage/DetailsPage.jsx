@@ -41,6 +41,10 @@ import Header from "../../../../../components/header/Header";
 import Feedback from "../../../../../components/carousel/Projexts/Feedback";
 import HeroBannerData from "../../../../home/heroBanner/HeroBannerData";
 import { MdShare, MdThumbUp } from "react-icons/md";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for styling
+import Lightbox from "yet-another-react-lightbox";
+
 
 const DetailsPage = () => {
   const { projectId } = useParams();
@@ -54,13 +58,15 @@ const DetailsPage = () => {
   const [profilePic, setProfilePic] = useState(null);
   const dispatch = useDispatch();
   const [liked, setLiked] = useState(false);
-
+  const [likesCount, setLikesCount] = useState(0); 
   // States for the modal
   const [open, setOpen] = useState(false);
   const [thumbnailImage, setThumbnailImage] = useState(null);
-
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
   // State for Thumbs
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false); // Lightbox state
+  const [lightboxIndex, setLightboxIndex] = useState(0); // Track current image index for the lightbox
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -74,10 +80,12 @@ const DetailsPage = () => {
     const fetchProjectDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/projects/id/${projectId}`
+          `${apiBaseUrl}/projects/id/${projectId}`
         );
         console.log("projectData is:", response.data);
         setProjectData(response.data);
+        setLiked(response.data.likes);
+        setLikesCount(response.data.likes || 0); 
       } catch (error) {
         console.error("Error fetching project details:", error);
       }
@@ -90,7 +98,7 @@ const DetailsPage = () => {
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/users/${userId}`
+          `${apiBaseUrl}/users/${userId}`
         );
         setUserName(response.data.username);
         setProfilePic(response.data.profilePic);
@@ -103,7 +111,10 @@ const DetailsPage = () => {
   }, [userId]);
 
 
-  
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
+    setIsLightboxOpen(true);
+  };
 
 
   const handleCardClick = () => {
@@ -121,7 +132,7 @@ const DetailsPage = () => {
     try {
       // Send request to update the project
       const updateResponse = await axios.post(
-        `http://localhost:5000/api/projects/id/${projectId}`, // Use the correct endpoint
+        `${apiBaseUrl}/projects/id/${projectId}`, // Use the correct endpoint
         formData,
         {
           headers: {
@@ -129,12 +140,17 @@ const DetailsPage = () => {
           },
         }
       );
-
-      console.log("Updated project response:", updateResponse.data);
+try {
+  console.log("Updated project response:", updateResponse.data);
+} catch (error) {
+  console.error("please try again", error);
+  
+}
+      
 
       // Refresh project data
       const refreshResponse = await axios.get(
-        `http://localhost:5000/api/projects/id/${projectId}`
+        `${apiBaseUrl}/projects/id/${projectId}`
       );
 
       setProjectData(refreshResponse.data);
@@ -145,49 +161,69 @@ const DetailsPage = () => {
   };
 
   const handleLikeClick = async () => {
-    try {
-      // Send a POST request to the server to register the like
-      const response = await axios.post(`http://localhost:5000/api/like`, {
-        userId: "66aa8b86ec331872d8b599dc", // Example user ID
-        likerId: "66aa8b86ec331872d8b599dc", // Example liker ID
-        projectId: "134c971e-6785-49e3-9371-3ee3acc714d3", // Example project ID
-      });
 
-      // Log the response from the server
-      console.log("Like added successfully:", response.data);
-
-      // Toggle the liked state to change the icon color
-      setLiked((prevLiked) => !prevLiked);
-    } catch (error) {
-      console.error("There was an error liking the item:", error);
+  try {
+    // Get the token from localStorage
+    const token = localStorage.getItem('token');
+    
+    // If token is not present, redirect to login
+    if (!token) {
+      toast.error("Authentication expired, please login again.");
+      navigate('/login');
+      return;
     }
-  };
+
+    // Optimistically update the UI before the API call
+    setLiked((prevLiked) => !prevLiked);
+    setLikesCount((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
+
+    // Send a request to like/unlike the project
+    const response = await axios.post(
+      `${apiBaseUrl}/projects/${projectId}/like`,
+      {}, // No body required
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the token from localStorage
+        },
+      }
+    );
+
+    console.log("liked by:", response.data);
+
+    // Show a success toast
+    toast.success("Project liked successfully!");
+
+    // Optionally, if the API returns the updated likes count, you can use that
+    if (response.data && response.data.likes !== undefined) {
+      setLikesCount(response.data.likes);
+    }
+  } catch (error) {
+    console.error("There was an error liking the item:", error);
+
+    // If the error is related to authentication (401), redirect to login
+    if (error.response && error.response.status === 401) {
+      toast.error("Authentication expired, please login again.");
+      localStorage.removeItem('authToken'); // Remove the expired token
+      navigate('/login'); // Navigate to login page
+    } else {
+      // Rollback UI update if there was an error
+      setLiked((prevLiked) => !prevLiked);
+      setLikesCount((prevCount) => (liked ? prevCount + 1 : prevCount - 1));
+
+      // Show a generic error toast
+      toast.error("There was an error liking the project.");
+    }
+  }
+};
+  
+  
   return (
     <div>
       <Header />
       {projectData ? (
         <ContentWrapper>
           <div className="detailsBanner">
-            {/* <Breadcrumbs
-              aria-label="breadcrumbs"
-              className="enhanced-breadcrumbs"
-            >
-              <Link
-                onClick={() => navigate("/home")}
-                className="breadcrumb-link"
-              >
-                <FaHome className="breadcrumb-icon" />
-                Home
-              </Link>
-              <Link
-                onClick={() => navigate("/projects")}
-                className="breadcrumb-link"
-              >
-                <FaFolder className="breadcrumb-icon" />
-                Projects
-              </Link>
-              <Typography className="breadcrumb-current">Details</Typography>
-            </Breadcrumbs> */}
+          <ToastContainer/>
             <div className="title">
               <h1>{projectData.name}</h1>
             </div>
@@ -220,6 +256,7 @@ const DetailsPage = () => {
                 <FaTrash className="icon" title="Delete Project" />
               </li>
             </ul>
+           
             <div className="content">
               <div className="left">
                 <Swiper
@@ -239,7 +276,7 @@ const DetailsPage = () => {
                   {projectData.thumbnailImages &&
                   projectData.thumbnailImages.length > 0 ? (
                     projectData.thumbnailImages.map((image, index) => (
-                      <SwiperSlide key={index}>
+                      <SwiperSlide key={index} onClick={() => openLightbox(index)}>
                         <Img
                           className="thumbImg"
                           src={image || PosterFallback}
@@ -289,7 +326,10 @@ const DetailsPage = () => {
                     </SwiperSlide>
                   )}
                 </Swiper>
+                
+                
               </div>
+              <div className="description1">{projectData.description}</div>
 
               <div className="right">
                 <div className="project-container row-layout">
@@ -322,9 +362,9 @@ const DetailsPage = () => {
                 </div>
               </div>
             </div>
-            <div className="description1">{projectData.description}</div>
+          
             <br />
-
+      
             <h4
               style={{
                 color: "white",
@@ -378,6 +418,13 @@ const DetailsPage = () => {
                     <FaShare style={{ color: "orange" }} />
                   </IconButton>
                 </div>
+              </div>
+              <div className="like-info">
+                {likesCount > 0 ? (
+                  <p>{likesCount} {likesCount === 1 ? 'like' : 'likes'}</p>
+                ) : (
+                  <p>Be the first to like the project</p>
+                )}
               </div>
             </div>
             <Feedback />

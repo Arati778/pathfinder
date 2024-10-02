@@ -11,7 +11,8 @@ import Recommended from '../../../home/Recommended/Recommended';
 const ProjectPage = () => {
   const { projectId } = useParams();
   const [projectData, setProjectData] = useState(null);
-  const { data, loading, error } = useFetch(`http://localhost:5000/api/projects/${projectId}`);
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  const { data, loading, error } = useFetch(`${apiBaseUrl}/projects/${projectId}`);
 
   useEffect(() => {
     if (data) {

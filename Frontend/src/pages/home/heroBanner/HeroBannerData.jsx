@@ -4,7 +4,7 @@ const HeroBannerData = [
     projectDescription:
       "An unusual group of robbers attempt to carry out the most perfect robbery in Spanish history - stealing 2.4 billion euros from the Royal Mint of Spain..",
     projectImageLink:
-      "https://m.media-amazon.com/images/M/MV5BZmI2MzU3NmMtNGVmMS00YzczLWIzMGQtNDU0MjcyNTYzODEyXkEyXkFqcGdeQWxiaWFtb250._V1_.jpg",
+      "https://comicvine.gamespot.com/a/uploads/scale_super/11137/111374412/7244038-6de6b8d9303a41363884e6f66d50da42.jpg",
       profileIconLink:"https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_1280.png",
       profileName:"Arati Prasad",
     approved: true,
@@ -15,7 +15,7 @@ const HeroBannerData = [
     projectDescription:
       "An exciting comic book series featuring superheroes and villains.",
     projectImageLink:
-      "https://i.ibb.co/CBhPhB1/Whats-App-Image-2023-09-13-at-6-36-27-PM.jpg",
+      "https://comicvine.gamespot.com/a/uploads/original/11120/111202288/7244363-batman-detective-comics-icare-icarus-new-start.png",
       profileIconLink:"https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_1280.png",
       profileName:"Krishna Kumar",
     approved: false,
@@ -70,7 +70,7 @@ const HeroBannerData = [
     projectDescription:
       "An exciting comic book series featuring superheroes and villains.",
     projectImageLink:
-      "https://i.ibb.co/CBhPhB1/Whats-App-Image-2023-09-13-at-6-36-27-PM.jpg",
+      "https://otakuusamagazine.com/wp-content/uploads/2021/04/art05.jpg",
       profileIconLink:"https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_1280.png",
       profileName:"Krishna Kumar",
     approved: false,
@@ -96,17 +96,7 @@ const HeroBannerData = [
     profileName:"Nandani kumari",
     approved: true,
     enquired: true,
-  },
-  {
-    projectTitle: "Project 4",
-    projectDescription: "Description for Project 3.",
-    projectImageLink:
-      "https://comicsbyte.com/wp-content/uploads/2023/03/Psychopath-Stories-5-Fiction-Comics.jpg",
-      profileIconLink:"https://cdn.pixabay.com/photo/2017/07/18/23/23/user-2517433_1280.png",
-      profileName:"Sunita panda",
-    approved: true,
-    enquired: true,
-  },
+  }
 ];
 
 export default HeroBannerData;

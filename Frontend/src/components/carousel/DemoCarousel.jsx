@@ -160,7 +160,7 @@ const projectsData = [
 
   {
     id: "10004",
-    name: "E-Commerce Website",
+    name: "Nirvana",
     Publisher: "Arati Prasad",
     description:
       "I'll create a stunning WordPress eCommerce website or online store tailored to your business, transforming visitors into loyal customers. Combining design finesse with a focus on user experience, your e-commerce website using woocommerce or an online store will seamlessly blend aesthetics with functionality. ",
@@ -169,6 +169,8 @@ const projectsData = [
     status: "In Progress",
     tags: "Developer",
     genre: "FullStack Developer",
+    ThumnailLink: 
+      "https://umacart.com/wp-content/uploads/2024/03/WhatsApp-Image-2024-03-06-at-12.47.50-PM.jpeg",
     ThumnailLinks: [
       "https://i.ibb.co/928K9yr/Screenshot-304.png",
       "https://i.ibb.co/RTBPdHh/Screenshot-305.png",
@@ -201,7 +203,7 @@ const projectsData = [
 
   {
     id: "10005",
-    name: "Chullu aur Lutera Bhoot",
+    name: "Aghori",
     Publisher: "Swapnil Publication",
     description:
       "A mobile application designed to help users manage their health and wellness routines.",
@@ -210,7 +212,7 @@ const projectsData = [
     status: "Completed",
     genre: "Comedy",
     ThumnailLink:
-      "https://i.ibb.co/CBhPhB1/Whats-App-Image-2023-09-13-at-6-36-27-PM.jpg",
+      "https://www.holycow.in/wp-content/uploads/2021/10/aghori-gaurav-302x450.jpg  ",
     teamMembers: [
       {
         id: "5",
@@ -250,7 +252,7 @@ const projectsData = [
   },
   {
     id: "10006",
-    name: "Chullu aur Lutera Bhoot",
+    name: "Dark Web Venom",
     Publisher: "Swapnil Publication",
     description:
       "A mobile application designed to help users manage their health and wellness routines.",
@@ -259,7 +261,7 @@ const projectsData = [
     status: "Completed",
     genre: "Comedy",
     ThumnailLink:
-      "https://i.ibb.co/CBhPhB1/Whats-App-Image-2023-09-13-at-6-36-27-PM.jpg",
+      "https://cdn.marvel.com/u/prod/marvel/i/mg/3/03/64514730ed092/portrait_uncanny.jpg",
     teamMembers: [
       {
         id: "5",
@@ -299,7 +301,7 @@ const projectsData = [
   },
   {
     id: "10003",
-    name: "Chullu aur Lutera Bhoot",
+    name: "Satyug #2",
     Publisher: "Swapnil Publication",
     description:
       "A mobile application designed to help users manage their health and wellness routines.",
@@ -308,7 +310,7 @@ const projectsData = [
     status: "Completed",
     genre: "Comedy",
     ThumnailLink:
-      "https://i.ibb.co/CBhPhB1/Whats-App-Image-2023-09-13-at-6-36-27-PM.jpg",
+      "https://umacart.com/wp-content/uploads/2023/08/1660550943FBIMG1660550845819jpg.jpg",
     teamMembers: [
       {
         id: "5",

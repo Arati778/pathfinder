@@ -7,6 +7,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUserId } from "../../store/userAction";
 import "./avatar.scss";
 import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 
 Modal.setAppElement("#root");
@@ -17,6 +20,7 @@ const ProfileCard = () => {
   const userIdLocalStorage = localStorage.getItem("Id");
   const userId = userIdRedux || userIdLocalStorage;
   const dispatch = useDispatch();
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
   const [data, setData] = useState({
     username: "Krishna",
     jobRole: "FullStack Developer",
@@ -42,7 +46,7 @@ const ProfileCard = () => {
       try {
         // Use 'id' from URL if present; otherwise, use 'userId'
         const userIdToFetch = id || userId;
-        const response = await axios.get(`http://localhost:5000/api/users/${userIdToFetch}`);
+        const response = await axios.get(`${apiBaseUrl}/users/${userIdToFetch}`);
         console.log("User data is:", response.data);
         const { fullName, description, jobRole } = response.data;
         setData((prevData) => ({
@@ -88,13 +92,14 @@ const ProfileCard = () => {
   const handleSaveButtonClick = async () => {
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_PUBLIC_API}/users/${userId}`,
+        `${apiBaseUrl}/users/${userId}`,
         {
           jobRole: formData.jobRole,
           description: formData.description,
         }
       );
       console.log("User data updated:", response.data);
+      toast.success("Your description updated succesfully!");
       setData({
         ...data,
         jobRole: formData.jobRole,
@@ -103,6 +108,7 @@ const ProfileCard = () => {
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating user data:", error);
+      toast.error("description update failed! please try again")
     }
   };
 
@@ -140,8 +146,9 @@ const ProfileCard = () => {
 
   return (
     <div className="col mb-3" style={{ marginTop: "30px" }}>
+    <ToastContainer/>
       <div>
-        <div
+      <div
           className="card"
           style={{
             background: "transparent",
@@ -164,9 +171,13 @@ const ProfileCard = () => {
           </h5>
           <br />
           <h6>About Me</h6>
-          <span>
-            <p style={{ color: "white" }}>{data.description}</p>
-          </span>
+          <div className="fade-text-container">
+        <span>
+          <p className="fade-text" style={{ color: "white" }}>
+            {data.description}
+          </p>
+        </span>
+      </div>
         </div>
       </div>
 
